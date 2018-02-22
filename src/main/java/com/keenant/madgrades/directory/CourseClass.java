@@ -2,7 +2,7 @@ package com.keenant.madgrades.directory;
 
 public class CourseClass {
   private final int termCode;
-  private final int subjectId;
+  private final String subjectId;
   private final int courseNumber;
   private final String sectionNumber;
   private final String sectionType;
@@ -12,7 +12,7 @@ public class CourseClass {
   private final Room room;
   private final String instructorId;
 
-  public CourseClass(int termCode, int subjectId, int courseNumber, String sectionNumber,
+  public CourseClass(int termCode, String subjectId, int courseNumber, String sectionNumber,
       String sectionType, String number, WeekdaySchedule daySchedule, TimeSchedule timeSchedule,
       Room room, String instructorId) {
     this.termCode = termCode;

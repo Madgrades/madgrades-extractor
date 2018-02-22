@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 public class Constants {
   /** columns for PDFs at https://registrar.wisc.edu/grade-reports/ found through trial and error */
-  public static final PdfTableExtractor GRADE_DIST_EXTRACTOR = new PdfTableExtractor(
+  public static final PdfTableExtractor GRADES_EXTRACTOR = new PdfTableExtractor(
       200, 215, 235, 280, 300, 330, 360, 385, 410, 435,
       460, 480, 510, 540, 560, 580, 610, 630, 660, 690
   );

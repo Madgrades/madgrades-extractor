@@ -2,9 +2,6 @@ package com.keenant.madgrades.directory;
 
 import com.keenant.madgrades.TableParser;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,14 +16,14 @@ public class DirectoryParser implements TableParser<Directory> {
   public Directory parse(List<List<String>> rows) throws ParseException {
     Directory directory = new Directory(this.termCode);
 
-    int subjectId = -1;
+    String subjectId = null;
 
     for (List<String> row : rows) {
       String joined = row.stream().collect(Collectors.joining(""));
 
       if (joined.contains("SUBJECT")) {
         String subjectStr = joined.substring(joined.length() - 4, joined.length() - 1);
-        subjectId = Integer.parseInt(subjectStr);
+        subjectId = subjectStr;
       }
 
       if (joined.contains("TERM:")) {
