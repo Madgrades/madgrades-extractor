@@ -1,5 +1,7 @@
 package com.keenant.madgrades.directory;
 
+import java.util.Objects;
+
 /**
  *
  */
@@ -40,5 +42,22 @@ public class Room {
     if (roomNumber != null)
       return facilityNumber + "@" + roomNumber;
     return facilityNumber;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof Room) {
+      Room other = (Room) o;
+
+      return Objects.equals(facilityNumber, other.facilityNumber) &&
+          Objects.equals(roomNumber, other.roomNumber);
+    }
+
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(facilityNumber, roomNumber);
   }
 }

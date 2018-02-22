@@ -59,24 +59,31 @@ public class GradesParser implements TableParser<Grades> {
       }
 
       String sectionNum = row.get(2);
-      String gpaCount = row.get(3);
+      int gpaCount = Integer.parseInt(row.get(3));
       String gpaAvgStr = row.get(4);
-      Map<GradeType, Float> gradeCounts = new HashMap<>();
+
+      Map<GradeType, Integer> gradeCounts = new HashMap<>();
+
       for (int i = 0; i < GradeType.values().length; i++) {
         GradeType curr = GradeType.values()[i];
 
         String percentStr = row.get(5 + i);
         if (percentStr.equals(".") || percentStr.length() == 0) {
-          gradeCounts.put(curr, null);
+          gradeCounts.put(curr, 0);
           continue;
         }
 
         try {
-          float percent = Float.parseFloat(percentStr);
-          gradeCounts.put(curr, percent);
+          // percent that got this gpa, between 0 and 1]
+          float percent = Float.parseFloat(percentStr) / 100.0F;
+
+          // multiply by total grades reported
+          int count = Math.round(percent * (float) gpaCount);
+          gradeCounts.put(curr, count);
         } catch (Exception e) {
           // TODO: This shouldn't happen, but we should notify user
-          gradeCounts.put(curr,null);
+          e.printStackTrace();
+          System.exit(-1);
         }
       }
 
@@ -84,7 +91,7 @@ public class GradesParser implements TableParser<Grades> {
       if (gpaAvgStr.length() > 0 && !gpaAvgStr.equals("***"))
         gpaAvg = Float.parseFloat(gpaAvgStr);
 
-      System.out.println(department + "/" + subjectId + "/" + courseName + "/" + sectionNum + "/" + gpaAvg + "/" + gradeCounts);
+      System.out.println(department + "/" + subjectId + "/" + courseName + "/" + sectionNum + "/" + gpaAvg + "/" + gpaCount + "/" + gradeCounts);
 
       if (rows.indexOf(row) > 500)
         break;

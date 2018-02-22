@@ -44,37 +44,37 @@ public class DirectoryParser implements TableParser<Directory> {
         continue;
       }
 
-      // unknown values: 0
+      // 0: unknown value
+      // 4: not used because its usually just "1'
 
       String sectionType = row.get(2);
       String sectionNum = row.get(3);
-      String classNum = row.get(4);
       String timeStr = row.get(5);
       String daysStr = row.get(6);
       String roomStr = row.get(7);
       String instructorId = row.get(10);
       String instructorName = row.get(11);
 
-      Room facility = Room.parse(roomStr);
+      Room room = Room.parse(roomStr);
 
       TimeSchedule timeSchedule = TimeSchedule.parse(timeStr);
       WeekdaySchedule daySchedule = WeekdaySchedule.parse(daysStr);
 
-      CourseClass courseClass = new CourseClass(
+      Section section = new Section(
           termCode,
           subjectId,
           courseNum,
           sectionNum,
           sectionType,
-          classNum,
           daySchedule,
           timeSchedule,
-          facility,
+          room,
           instructorId
       );
 
+      directory.registerRoom(room);
       directory.registerInstructor(instructorId, instructorName);
-      directory.addClass(courseClass);
+      directory.addSection(section);
     }
 
     return directory;
