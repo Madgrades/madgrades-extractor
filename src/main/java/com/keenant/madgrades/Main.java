@@ -14,16 +14,19 @@ public class Main {
   static RelationalJoiner joiner = new RelationalJoiner();
 
   public static void main(String[] args) throws Exception {
-    perform(1162, "/home/keenan/Documents/1162_Final_DIR_Report.pdf", "/home/keenan/Documents/report-gradedistribution-2015-2016fall.pdf");
-//    perform(1174, "/home/keenan/Documents/1174-Final-DIR-Report.pdf", "/home/keenan/Documents/report-gradedistribution-2016-2017spring.pdf");
-//    perform(1182, "/home/keenan/Documents/1182-Final-DIR-Report.pdf", "/home/keenan/Documents/report-gradedistribution-2017-2018fall.pdf");
+    extract(1162, "/home/keenan/Documents/1162_Final_DIR_Report.pdf", "/home/keenan/Documents/report-gradedistribution-2015-2016fall.pdf");
+    extract(1164, "/home/keenan/Documents/1164_Final_DIR_Report.pdf", "/home/keenan/Documents/report-gradedistribution-2015-2016spring.pdf");
+    extract(1172, "/home/keenan/Documents/1172-Final-DIR-Report.pdf", "/home/keenan/Documents/report-gradedistribution-2016-2017fall.pdf");
+    extract(1174, "/home/keenan/Documents/1174-Final-DIR-Report.pdf", "/home/keenan/Documents/report-gradedistribution-2016-2017spring.pdf");
+    extract(1182, "/home/keenan/Documents/1182-Final-DIR-Report.pdf", "/home/keenan/Documents/report-gradedistribution-2017-2018fall.pdf");
 
     RelationalDatabase db = joiner.join();
 
-    db.writeCsv(new File("/home/keenan/Documents"));
+    db.writeSql(new File("/home/keenan/Documents"));
   }
 
-  private static void perform(int termCode, String dirUrl, String gradesUrl) throws Exception {
+  private static void extract(int termCode, String dirUrl, String gradesUrl) throws Exception {
+    System.out.println("performing " + termCode);
     InputStream stream = new FileInputStream(dirUrl);
     PdfTableExtractor extractor = Constants.DIR_EXTRACTOR;
     List<List<String>> rows = extractor.extract(stream);

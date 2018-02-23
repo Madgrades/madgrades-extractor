@@ -1,18 +1,24 @@
 package com.keenant.madgrades.data;
 
 import com.keenant.madgrades.util.CsvWriter;
+import com.keenant.madgrades.util.Serializer;
+import com.keenant.madgrades.util.SqlWriter;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
 public class CourseBean {
+  public static final Serializer<CourseBean> SERIALIZER = bean -> Arrays.asList(
+      bean.uuid.toString(),
+      bean.subjectCode,
+      bean.number
+  );
   public static final CsvWriter<CourseBean> CSV_WRITER = new CsvWriter<>(
-      "uuid,subject_code,number",
-      bean -> Arrays.asList(
-          bean.uuid,
-          bean.subjectCode,
-          bean.number
-      ));
+      "uuid,subject_code,number", SERIALIZER);
+
+  public static final SqlWriter<CourseBean> SQL_WRITER = new SqlWriter<>(
+      "courses", SERIALIZER
+  );
 
   private UUID uuid;
   private String subjectCode;

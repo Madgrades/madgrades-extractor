@@ -60,7 +60,7 @@ public class RelationalJoiner implements ReportJoiner<RelationalDatabase> {
 
       for (Entry<String, Map<GradeType, Integer>> dist : course.getGrades()) {
         GradeDistributionBean bean = new GradeDistributionBean(
-            courseBean.getUuid(),
+            offeringBean.getUuid(),
             dist.getKey(),
             dist.getValue()
         );

@@ -82,7 +82,8 @@ public class Section {
   }
 
   public void addInstructor(String instructorId) {
-    instructors.add(instructorId);
+    if (instructorId.length() > 0)
+      instructors.add(instructorId);
   }
 
   public String getSubjectCode() {

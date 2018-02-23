@@ -1,6 +1,8 @@
 package com.keenant.madgrades.data;
 
 import com.keenant.madgrades.util.CsvWriter;
+import com.keenant.madgrades.util.Serializer;
+import com.keenant.madgrades.util.SqlWriter;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
@@ -8,13 +10,17 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 public class RoomBean implements Serializable {
+  public static final Serializer<RoomBean> SERIALIZER = bean -> Arrays.asList(
+      bean.uuid.toString(),
+      bean.facilityCode,
+      bean.roomCode
+  );
   public static final CsvWriter<RoomBean> CSV_WRITER = new CsvWriter<>(
-      "uuid,facility_code,room_code",
-      bean -> Arrays.asList(
-          bean.uuid,
-          bean.facilityCode,
-          bean.roomCode
-      ));
+      "uuid,facility_code,room_code", SERIALIZER
+  );
+  public static final SqlWriter<RoomBean> SQL_WRITER = new SqlWriter<>(
+      "rooms", SERIALIZER
+  );
 
   private UUID uuid;
 

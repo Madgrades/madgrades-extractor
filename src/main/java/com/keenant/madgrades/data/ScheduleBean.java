@@ -3,6 +3,8 @@ package com.keenant.madgrades.data;
 import com.keenant.madgrades.parser.TimeSchedule;
 import com.keenant.madgrades.parser.WeekdaySchedule;
 import com.keenant.madgrades.util.CsvWriter;
+import com.keenant.madgrades.util.Serializer;
+import com.keenant.madgrades.util.SqlWriter;
 import java.time.DayOfWeek;
 import java.util.Arrays;
 import java.util.UUID;
@@ -10,20 +12,27 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ScheduleBean {
+  public static final Serializer<ScheduleBean> SERIALIZER = bean -> Arrays.asList(
+      bean.uuid.toString(),
+      bean.startTime,
+      bean.endTime,
+      bean.mon,
+      bean.tues,
+      bean.wed,
+      bean.thurs,
+      bean.fri,
+      bean.sat,
+      bean.sun
+  );
   public static final CsvWriter<ScheduleBean> CSV_WRITER = new CsvWriter<>(
-      "start_time,end_time,mon,tues,wed,thurs,fri,sat,sun",
-      bean -> Arrays.asList(
-          bean.startTime,
-          bean.endTime,
-          bean.mon,
-          bean.tues,
-          bean.wed,
-          bean.thurs,
-          bean.fri,
-          bean.sat,
-          bean.sun
-      ));
+      "uuid,start_time,end_time,mon,tues,wed,thurs,fri,sat,sun",
+      SERIALIZER
+  );
+  public static final SqlWriter<ScheduleBean> SQL_WRITER = new SqlWriter<>(
+      "schedules", SERIALIZER
+  );
 
+  private UUID uuid;
   private int startTime;
   private int endTime;
   private boolean mon;
@@ -33,7 +42,6 @@ public class ScheduleBean {
   private boolean fri;
   private boolean sat;
   private boolean sun;
-  private UUID uuid;
 
   public ScheduleBean(int startTime, int endTime, boolean mon, boolean tues, boolean wed,
       boolean thurs, boolean fri, boolean sat, boolean sun) {

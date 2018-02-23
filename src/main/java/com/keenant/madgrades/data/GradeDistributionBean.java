@@ -4,34 +4,40 @@ import static com.keenant.madgrades.parser.GradeType.*;
 
 import com.keenant.madgrades.parser.GradeType;
 import com.keenant.madgrades.util.CsvWriter;
+import com.keenant.madgrades.util.Serializer;
+import com.keenant.madgrades.util.SqlWriter;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
 public class GradeDistributionBean {
+  public static final Serializer<GradeDistributionBean> SERIALIZER = bean -> Arrays.asList(
+      bean.courseUuid.toString(),
+      bean.sectionNum,
+      bean.a_count,
+      bean.ab_count,
+      bean.b_count,
+      bean.bc_count,
+      bean.c_count,
+      bean.d_count,
+      bean.f_count,
+      bean.s_count,
+      bean.u_count,
+      bean.cr_count,
+      bean.n_count,
+      bean.p_count,
+      bean.i_count,
+      bean.nw_count,
+      bean.nr_count,
+      bean.other_count
+  );
   public static final CsvWriter<GradeDistributionBean> CSV_WRITER = new CsvWriter<>(
-      "course_uuid,section_number,a_count,ab_count,b_count,bc_count,c_count,d_count,f_count,"
-          + "s_count,u_count,cr_count,n_count,p_count,i_count,nw_count,nr_count,other_count",
-      bean -> Arrays.asList(
-          bean.courseUuid,
-          bean.sectionNum,
-          bean.a_count,
-          bean.ab_count,
-          bean.b_count,
-          bean.bc_count,
-          bean.c_count,
-          bean.d_count,
-          bean.f_count,
-          bean.s_count,
-          bean.u_count,
-          bean.cr_count,
-          bean.n_count,
-          bean.p_count,
-          bean.i_count,
-          bean.nw_count,
-          bean.nr_count,
-          bean.other_count
-      ));
+      "course_offering_uuid,section_number,a_count,ab_count,b_count,bc_count,c_count,"
+          + "d_count,f_count,s_count,u_count,cr_count,n_count,p_count,i_count,nw_count,"
+          + "nr_count,other_count", SERIALIZER);
+  public static final SqlWriter<GradeDistributionBean> SQL_WRITER = new SqlWriter<>(
+      "grade_distributions", SERIALIZER
+  );
 
   private UUID courseUuid;
   private String sectionNum;
@@ -52,11 +58,11 @@ public class GradeDistributionBean {
   private int nr_count;
   private int other_count;
 
-  public GradeDistributionBean(UUID courseUuid, String sectionNum, int a_count, int ab_count,
+  public GradeDistributionBean(UUID courseOfferingUuid, String sectionNum, int a_count, int ab_count,
       int b_count, int bc_count, int c_count, int d_count, int f_count, int s_count,
       int u_count, int cr_count, int n_count, int p_count, int i_count,
       int nw_count, int nr_count, int other_count) {
-    this.courseUuid = courseUuid;
+    this.courseUuid = courseOfferingUuid;
     this.sectionNum = sectionNum;
     this.a_count = a_count;
     this.ab_count = ab_count;
@@ -76,9 +82,9 @@ public class GradeDistributionBean {
     this.other_count = other_count;
   }
   
-  public GradeDistributionBean(UUID courseUuid, String sectionNum, Map<GradeType, Integer> grades) {
+  public GradeDistributionBean(UUID courseOfferingUuid, String sectionNum, Map<GradeType, Integer> grades) {
     this(
-        courseUuid,
+        courseOfferingUuid,
         sectionNum,
         grades.get(A),
         grades.get(AB),

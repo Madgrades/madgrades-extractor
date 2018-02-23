@@ -8,20 +8,20 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class CsvWriter<T> {
+public class CsvWriter<T> implements Writer<T> {
   private final String header;
-  private final Function<T, List<?>> mapper;
+  private final Serializer<T> serializer;
 
-  public CsvWriter(String header, Function<T, List<?>> mapper) {
+  public CsvWriter(String header, Serializer<T> serializer) {
     this.header = header;
-    this.mapper = mapper;
+    this.serializer = serializer;
   }
 
   public void write(File file, Collection<T> data) throws IOException {
     PrintWriter csv = new PrintWriter(file);
     csv.println(header);
     for (T item : data) {
-      String entry = mapper.apply(item).stream().map(object -> {
+      String entry = serializer.serialize(item).stream().map(object -> {
         if (object instanceof String) {
           return '"' + object.toString() + '"';
         }
