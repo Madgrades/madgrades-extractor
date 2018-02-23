@@ -1,5 +1,6 @@
-package com.keenant.madgrades.directory;
+package com.keenant.madgrades.parser;
 
+import com.keenant.madgrades.data.RoomBean;
 import java.util.Objects;
 
 /**
@@ -10,12 +11,12 @@ public class Room {
   public static Room OFF_CAMPUS = new Room("OFF CAMPUS", null);
   public static Room NONE = new Room("NONE", null);
 
-  private final String facilityNumber;
-  private final String roomNumber;
+  private final String facilityCode;
+  private final String roomCode;
 
-  public Room(String facilityNumber, String roomNumber) {
-    this.facilityNumber = facilityNumber;
-    this.roomNumber = roomNumber;
+  public Room(String facilityCode, String roomCode) {
+    this.facilityCode = facilityCode;
+    this.roomCode = roomCode;
   }
 
   public static Room parse(String roomStr) {
@@ -39,9 +40,9 @@ public class Room {
 
   @Override
   public String toString() {
-    if (roomNumber != null)
-      return facilityNumber + "@" + roomNumber;
-    return facilityNumber;
+    if (roomCode != null)
+      return facilityCode + "-" + roomCode;
+    return facilityCode;
   }
 
   @Override
@@ -49,8 +50,8 @@ public class Room {
     if (o instanceof Room) {
       Room other = (Room) o;
 
-      return Objects.equals(facilityNumber, other.facilityNumber) &&
-          Objects.equals(roomNumber, other.roomNumber);
+      return Objects.equals(facilityCode, other.facilityCode) &&
+          Objects.equals(roomCode, other.roomCode);
     }
 
     return false;
@@ -58,6 +59,10 @@ public class Room {
 
   @Override
   public int hashCode() {
-    return Objects.hash(facilityNumber, roomNumber);
+    return Objects.hash(facilityCode, roomCode);
+  }
+
+  public RoomBean toBean() {
+    return new RoomBean(facilityCode, roomCode);
   }
 }

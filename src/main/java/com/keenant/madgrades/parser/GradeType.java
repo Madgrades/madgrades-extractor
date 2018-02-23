@@ -1,4 +1,4 @@
-package com.keenant.madgrades.grades;
+package com.keenant.madgrades.parser;
 
 public enum GradeType {
   A,

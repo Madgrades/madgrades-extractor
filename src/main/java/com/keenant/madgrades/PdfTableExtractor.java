@@ -14,6 +14,9 @@ import technology.tabula.RectangularTextContainer;
 import technology.tabula.Table;
 import technology.tabula.extractors.BasicExtractionAlgorithm;
 
+/**
+ * Extracts a table from a PDF file.
+ */
 public class PdfTableExtractor {
   private static final BasicExtractionAlgorithm ALGORITHM = new BasicExtractionAlgorithm();
   private final List<Float> columns;
@@ -24,10 +27,6 @@ public class PdfTableExtractor {
 
   public PdfTableExtractor(Integer... columns) {
     this(Arrays.stream(columns).map(Integer::floatValue).collect(Collectors.toList()));
-  }
-
-  public PdfTableExtractor(Float... columns) {
-    this(Arrays.asList(columns));
   }
 
   public List<List<String>> extract(InputStream stream) throws IOException {
@@ -57,6 +56,7 @@ public class PdfTableExtractor {
       }
     }
 
+    pdf.close();
     return result;
   }
 }

@@ -1,9 +1,8 @@
-package com.keenant.madgrades.directory;
+package com.keenant.madgrades.parser;
 
 import com.keenant.madgrades.Constants;
 import java.time.DayOfWeek;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,8 +14,12 @@ public class WeekdaySchedule {
     this.days = days;
   }
 
+  public boolean isScheduled(DayOfWeek day) {
+    return days.contains(day);
+  }
+
   public static WeekdaySchedule parse(String days) {
-    Set<DayOfWeek> result = new HashSet<>();
+    Set<DayOfWeek> result = new LinkedHashSet<>();
 
     if (days.length() > 0) {
       String[] daysSplit = days.split(" ");
@@ -29,12 +32,17 @@ public class WeekdaySchedule {
     return new WeekdaySchedule(result);
   }
 
+  public String serialize() {
+    return days.stream()
+        .map(Constants.DAY_TO_STR::get)
+        .collect(Collectors.joining(""));
+  }
+
   @Override
   public String toString() {
     if (days.isEmpty())
       return "NONE";
-    return Arrays.stream(DayOfWeek.values())
-        .filter(days::contains)
+    return days.stream()
         .map(Constants.DAY_TO_STR::get)
         .collect(Collectors.joining(" "));
   }

@@ -1,29 +1,28 @@
-package com.keenant.madgrades.directory;
+package com.keenant.madgrades.parser;
 
 import com.keenant.madgrades.TableParser;
 import java.text.ParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DirectoryParser implements TableParser<Directory> {
+public class DirParser implements TableParser {
   private final int termCode;
 
-  public DirectoryParser(int termCode) {
+  public DirParser(int termCode) {
     this.termCode = termCode;
   }
 
   @Override
-  public Directory parse(List<List<String>> rows) throws ParseException {
-    Directory directory = new Directory(this.termCode);
+  public TermReport parse(List<List<String>> rows) throws ParseException {
+    TermReport report = new TermReport(this.termCode);
 
-    String subjectId = null;
+    String subjectCode = null;
 
     for (List<String> row : rows) {
       String joined = row.stream().collect(Collectors.joining(""));
 
       if (joined.contains("SUBJECT")) {
-        String subjectStr = joined.substring(joined.length() - 4, joined.length() - 1);
-        subjectId = subjectStr;
+        subjectCode = joined.substring(joined.length() - 4, joined.length() - 1);
       }
 
       if (joined.contains("TERM:")) {
@@ -35,7 +34,7 @@ public class DirectoryParser implements TableParser<Directory> {
         }
       }
 
-      int courseNum = -1;
+      int courseNum;
 
       try {
         courseNum = Integer.parseInt(row.get(1));
@@ -56,27 +55,22 @@ public class DirectoryParser implements TableParser<Directory> {
       String instructorName = row.get(11);
 
       Room room = Room.parse(roomStr);
-
-      TimeSchedule timeSchedule = TimeSchedule.parse(timeStr);
       WeekdaySchedule daySchedule = WeekdaySchedule.parse(daysStr);
+      TimeSchedule timeSchedule = TimeSchedule.parse(timeStr);
 
-      Section section = new Section(
-          termCode,
-          subjectId,
-          courseNum,
+      Course course = report.getOrCreateCourse(subjectCode, courseNum);
+      Section section = course.registerSection(
           sectionNum,
           sectionType,
           daySchedule,
           timeSchedule,
-          room,
-          instructorId
+          room
       );
-
-      directory.registerRoom(room);
-      directory.registerInstructor(instructorId, instructorName);
-      directory.addSection(section);
+      section.addInstructor(instructorId);
+      report.registerRoom(room);
+      report.registerInstructor(instructorId, instructorName);
     }
 
-    return directory;
+    return report;
   }
 }

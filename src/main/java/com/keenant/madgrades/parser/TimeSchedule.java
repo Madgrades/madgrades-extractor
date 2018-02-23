@@ -1,4 +1,4 @@
-package com.keenant.madgrades.directory;
+package com.keenant.madgrades.parser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,6 +14,14 @@ public class TimeSchedule {
   public TimeSchedule(int startTime, int endTime) {
     this.startTime = startTime;
     this.endTime = endTime;
+  }
+
+  public int getStartTime() {
+    return startTime;
+  }
+
+  public int getEndTime() {
+    return endTime;
   }
 
   public static TimeSchedule parse(String timeStr) throws ParseException {
