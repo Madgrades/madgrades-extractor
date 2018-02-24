@@ -12,15 +12,13 @@ import com.keenant.madgrades.data.SubjectMembershipBean;
 import com.keenant.madgrades.data.TeachingBean;
 import com.keenant.madgrades.parser.CourseOffering;
 import com.keenant.madgrades.parser.GradeType;
-import com.keenant.madgrades.parser.TermReport;
-import com.keenant.madgrades.parser.Room;
 import com.keenant.madgrades.parser.Section;
+import com.keenant.madgrades.parser.TermReport;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class RelationalJoiner implements ReportJoiner<RelationalDatabase> {
   private final Set<CourseBean> courses = new HashSet<>();
@@ -39,8 +37,6 @@ public class RelationalJoiner implements ReportJoiner<RelationalDatabase> {
 
   @Override
   public void add(TermReport report) {
-    rooms.addAll(report.getRooms().stream().map(Room::toBean).collect(Collectors.toSet()));
-
     for (CourseOffering course : report.getCourses()) {
       CourseBean courseBean = course.toBean();
       courses.add(courseBean);
@@ -50,10 +46,12 @@ public class RelationalJoiner implements ReportJoiner<RelationalDatabase> {
 
       for (Section section : course.getSections()) {
         ScheduleBean scheduleBean = section.toScheduleBean();
-        SectionBean sectionBean = section.toBean(offeringBean.getUuid(), scheduleBean.getUuid());
+        RoomBean roomBean = section.getRoom().toBean();
+        SectionBean sectionBean = section.toBean(offeringBean.getUuid(), roomBean.getUuid(), scheduleBean.getUuid());
         List<TeachingBean> teachingBeans = section.toTeachingBeans(sectionBean.getUuid());
         List<InstructorBean> instructorBeans = section.toInstructorBeans(report.getInstructorNames());
 
+        rooms.add(roomBean);
         sections.add(sectionBean);
         schedules.add(scheduleBean);
         teachings.addAll(teachingBeans);

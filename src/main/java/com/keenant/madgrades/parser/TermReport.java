@@ -22,9 +22,6 @@ public class TermReport {
   /** course num -> course name -> courses */
   private final Table<Integer, String, CourseOffering> courses = HashBasedTable.create();
 
-  /** set of every room present in this directory */
-  private final Set<Room> rooms = new HashSet<>();
-
   /** employee id -> instructor name */
   private final Map<String, String> instructorNames = new HashMap<>();
 
@@ -38,10 +35,6 @@ public class TermReport {
 
   public Map<String, String> getInstructorNames() {
     return instructorNames;
-  }
-
-  public Set<Room> getRooms() {
-    return rooms;
   }
 
   public Collection<CourseOffering> getCourses() {
@@ -83,17 +76,12 @@ public class TermReport {
     instructorNames.put(id, name);
   }
 
-  public void registerRoom(Room room) {
-    rooms.add(room);
-  }
-
   @Override
   public String toString() {
     StringBuilder out = new StringBuilder();
 
     out.append("Term ").append(termCode).append(":\n");
     out.append("\tCourses: ").append(courses.values().size()).append("\n");
-    out.append("\tRooms: ").append(rooms.size()).append("\n");
     out.append("\tInstructors: ").append(instructorNames.size());
 
     return out.toString();

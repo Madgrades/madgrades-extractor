@@ -39,11 +39,12 @@ public class Section {
         + "/" + room + "/" + instructors;
   }
 
-  public SectionBean toBean(UUID sectionOfferingUuid, UUID scheduleUuid) {
+  public SectionBean toBean(UUID sectionOfferingUuid, UUID roomUuid, UUID scheduleUuid) {
     return new SectionBean(
         sectionOfferingUuid,
         type,
         number,
+        roomUuid,
         scheduleUuid
     );
   }

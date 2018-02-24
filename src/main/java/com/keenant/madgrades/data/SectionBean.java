@@ -14,10 +14,11 @@ public class SectionBean implements Serializable {
       bean.courseOfferingUuid.toString(),
       bean.type,
       bean.number,
+      bean.roomUuid.toString(),
       bean.scheduleUuid.toString()
   );
   public static final CsvWriter<SectionBean> CSV_WRITER = new CsvWriter<>(
-      "uuid,course_offering_uuid,section_type,number,schedule_uuid",
+      "uuid,course_offering_uuid,section_type,number,room_uuid,schedule_uuid",
       SERIALIZER
   );
   public static final SqlWriter<SectionBean> SQL_WRITER = new SqlWriter<>(
@@ -28,12 +29,14 @@ public class SectionBean implements Serializable {
   private UUID courseOfferingUuid;
   private String type;
   private String number;
+  private UUID roomUuid;
   private UUID scheduleUuid;
 
-  public SectionBean(UUID courseOfferingUuid, String type, String number, UUID scheduleUuid) {
+  public SectionBean(UUID courseOfferingUuid, String type, String number, UUID roomUuid, UUID scheduleUuid) {
     this.courseOfferingUuid = courseOfferingUuid;
     this.type = type;
     this.number = number;
+    this.roomUuid = roomUuid;
     this.scheduleUuid = scheduleUuid;
     uuid = generateUuid();
   }

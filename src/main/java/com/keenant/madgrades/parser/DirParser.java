@@ -72,7 +72,6 @@ public class DirParser implements TableParser {
       );
 
       section.addInstructor(instructorId);
-      report.registerRoom(room);
       report.registerInstructor(instructorId, instructorName);
     }
 
