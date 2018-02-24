@@ -4,6 +4,7 @@ import com.keenant.madgrades.TableParser;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,12 +29,8 @@ public class GradesParser implements TableParser {
   }
 
   private void registerCourse(String subjectCode, int courseNum, String name, Map<String, Map<GradeType, Integer>> backlog) {
-    CourseOffering offering = report.getOrCreateCourse(courseNum, name);
-
-    for (Entry<String, Map<GradeType, Integer>> entry : backlog.entrySet()) {
-      offering.addGrades(entry.getKey(), entry.getValue());
-    }
-
+    Map<String, Map<GradeType, Integer>> grades = new HashMap<>(backlog);
+    CourseOffering offering = report.getOrCreateCourse(courseNum, name, grades);
     offering.registerSubject(subjectCode);
   }
 

@@ -1,10 +1,15 @@
 package com.keenant.madgrades.data;
 
+import com.keenant.madgrades.parser.CourseOffering;
 import com.keenant.madgrades.util.CsvWriter;
 import com.keenant.madgrades.util.Serializer;
 import com.keenant.madgrades.util.SqlWriter;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class CourseOfferingBean {
   public static final Serializer<CourseOfferingBean> SERIALIZER = bean -> Arrays.asList(
@@ -24,11 +29,13 @@ public class CourseOfferingBean {
   private UUID courseUuid;
   private int termCode;
   private String name;
+  private Set<String> sectionNumbers; // this is just used to distinguish
 
-  public CourseOfferingBean(UUID courseUuid, int termCode, String name) {
+  public CourseOfferingBean(UUID courseUuid, int termCode, String name, Set<String> sectionNumbers) {
     this.courseUuid = courseUuid;
     this.termCode = termCode;
     this.name = name;
+    this.sectionNumbers = sectionNumbers;
     uuid = generateUuid();
   }
 
@@ -37,8 +44,24 @@ public class CourseOfferingBean {
   }
 
   private UUID generateUuid() {
-    String uniqueStr = courseUuid.toString() + termCode;
+    String sectionNumbersStr = sectionNumbers.stream().sorted().collect(Collectors.joining());
+    String uniqueStr = courseUuid.toString() + termCode + name + sectionNumbersStr;
     return UUID.nameUUIDFromBytes(uniqueStr.getBytes());
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof CourseOfferingBean) {
+      CourseOfferingBean other = (CourseOfferingBean) o;
+      return uuid.equals(other.uuid);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    String subjectCodesStr = sectionNumbers.stream().sorted().collect(Collectors.joining());
+    return Objects.hash(uuid, courseUuid, termCode, name, subjectCodesStr);
   }
 
   public UUID getUuid() {

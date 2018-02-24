@@ -54,8 +54,5 @@ public class Main {
     }
 
     joiner.add(report);
-
-    System.out.println(report.getCourse(352, "Digital System Fundamentals"));
-    System.out.println(report);
   }
 }

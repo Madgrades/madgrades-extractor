@@ -5,7 +5,6 @@ import com.google.common.collect.Table;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,7 +19,7 @@ public class TermReport {
   private final int termCode;
 
   /** course num -> course name -> courses */
-  private final Table<Integer, String, CourseOffering> courses = HashBasedTable.create();
+  private final Table<Integer, String, List<CourseOffering>> courses = HashBasedTable.create();
 
   /** employee id -> instructor name */
   private final Map<String, String> instructorNames = new HashMap<>();
@@ -38,35 +37,50 @@ public class TermReport {
   }
 
   public Collection<CourseOffering> getCourses() {
-    return courses.values();
+    return courses.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
   }
 
-  public Optional<CourseOffering> getCourse(int courseNum, String name) {
+  public Optional<List<CourseOffering>> getCourses(int courseNum, String name) {
     return Optional.ofNullable(courses.get(courseNum, name));
   }
 
-  public Optional<CourseOffering> findCourse(String subjectCode, int courseNum) {
-    // todo: simplify this entire function to one line, this was done just for testing
-    Stream<CourseOffering> s = courses.row(courseNum).values().stream()
-        .filter(course -> course.hasSubjectCode(subjectCode));
+  public Optional<CourseOffering> getCourse(int courseNum, String name, Set<String> sectionNumbers) {
+    List<CourseOffering> courses = getCourses(courseNum, name).orElse(null);
 
-    List<CourseOffering> result = s.collect(Collectors.toList());
-    if (result.size() > 1)
-      throw new IllegalArgumentException();
+    if (courses == null)
+      return Optional.empty();
 
-    return result.stream().findFirst();
+    return courses.stream()
+        .filter(course -> course.sectionsMatch(sectionNumbers))
+        .findFirst();
   }
 
-  public CourseOffering getOrCreateCourse(int courseNum, String name) {
+  public Optional<CourseOffering> findCourse(String subjectCode, int courseNum) {
+    return courses.row(courseNum).values().stream()
+        .flatMap(Collection::stream)
+        .filter(course -> course.hasSubjectCode(subjectCode))
+        .findFirst();
+  }
+
+  public CourseOffering getOrCreateCourse(int courseNum, String name,
+      Map<String, Map<GradeType, Integer>> grades) {
     // todo: remove this once ready
     if (name == null)
       throw new IllegalArgumentException();
 
-    CourseOffering course = getCourse(courseNum, name).orElse(null);
+    CourseOffering course = getCourse(courseNum, name, grades.keySet()).orElse(null);
+
     if (course == null) {
-      course = new CourseOffering(termCode, courseNum, name);
-      courses.put(courseNum, name, course);
+      course = new CourseOffering(termCode, courseNum, name, grades);
+
+      List<CourseOffering> existing = getCourses(courseNum, name).orElse(null);
+      if (existing == null) {
+        existing = new ArrayList<>();
+        courses.put(courseNum, name, existing);
+      }
+      existing.add(course);
     }
+
     return course;
   }
 

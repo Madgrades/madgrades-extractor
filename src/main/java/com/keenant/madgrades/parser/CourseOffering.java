@@ -3,11 +3,9 @@ package com.keenant.madgrades.parser;
 import com.keenant.madgrades.data.CourseBean;
 import com.keenant.madgrades.data.CourseOfferingBean;
 import com.keenant.madgrades.data.SubjectMembershipBean;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -23,12 +21,23 @@ public class CourseOffering {
   /** all subjects where this course is cross-listed as for this term */
   private final Set<String> subjectCodes = new HashSet<>();
   private final Set<Section> sections = new HashSet<>();
-  private final Map<String, Map<GradeType, Integer>> grades = new HashMap<>();
+  private final Map<String, Map<GradeType, Integer>> grades;
 
-  public CourseOffering(int termCode, int number, String name) {
+  public CourseOffering(int termCode, int number, String name,
+      Map<String, Map<GradeType, Integer>> grades) {
     this.termCode = termCode;
     this.number = number;
     this.name = name;
+    this.grades = grades;
+  }
+
+  public Set<String> getSectionNumbers() {
+    return grades.keySet();
+  }
+
+  public boolean sectionsMatch(Set<String> sectionNumbers) {
+    return this.grades.size() == sectionNumbers.size() &&
+        this.grades.keySet().containsAll(sectionNumbers);
   }
 
   public Set<Entry<String, Map<GradeType, Integer>>> getGrades() {
@@ -40,17 +49,17 @@ public class CourseOffering {
   }
 
   public CourseBean toBean() {
-    return new CourseBean(number, name);
+    return new CourseBean(number, name, subjectCodes);
   }
 
   public CourseOfferingBean toCourseOfferingBean(UUID courseOfferingUuid) {
-    return new CourseOfferingBean(courseOfferingUuid, termCode, name);
+    return new CourseOfferingBean(courseOfferingUuid, termCode, name, grades.keySet());
   }
 
   public Set<SubjectMembershipBean> toSubjectMembershipBeans(UUID courseUuid) {
-    return subjectCodes.stream().map(subjectCode -> {
-      return new SubjectMembershipBean(subjectCode, courseUuid);
-    }).collect(Collectors.toSet());
+    return subjectCodes.stream()
+        .map(subjectCode -> new SubjectMembershipBean(subjectCode, courseUuid))
+        .collect(Collectors.toSet());
   }
 
   public void registerSubject(String subjectCode) {
@@ -80,19 +89,6 @@ public class CourseOffering {
     return newSection;
   }
 
-  public void addGrades(String sectionNum, Map<GradeType, Integer> sectionGrades) {
-    // combine grades
-    if (grades.containsKey(sectionNum)) {
-      Map<GradeType, Integer> existingGrades = grades.get(sectionNum);
-      for (Entry<GradeType, Integer> entry : sectionGrades.entrySet()) {
-        int sum = entry.getValue() + existingGrades.get(entry.getKey());
-        existingGrades.put(entry.getKey(), sum);
-      }
-      return;
-    }
-    grades.put(sectionNum, sectionGrades);
-  }
-
   public String getName() {
     return name;
   }
@@ -102,23 +98,8 @@ public class CourseOffering {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (o instanceof CourseOffering) {
-      CourseOffering other = (CourseOffering) o;
-      return name.equals(other.name) &&
-          number == other.number;
-    }
-    return false;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(number, name);
-  }
-
-  @Override
   public String toString() {
-    return subjectCodes + "/" + number + "/" + name + "/" + sections;
+    return subjectCodes + "/" + number + "/" + name + "/" + grades.keySet();
   }
 
   public boolean hasSubjectCode(String subjectCode) {

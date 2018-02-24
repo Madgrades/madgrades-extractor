@@ -5,7 +5,9 @@ import com.keenant.madgrades.util.Serializer;
 import com.keenant.madgrades.util.SqlWriter;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class CourseBean {
   public static final Serializer<CourseBean> SERIALIZER = bean -> Arrays.asList(
@@ -23,10 +25,12 @@ public class CourseBean {
   private UUID uuid;
   private int number;
   private String name;
+  private Set<String> subjectCodes;
 
-  public CourseBean(int number, String name) {
+  public CourseBean(int number, String name, Set<String> subjectCodes) {
     this.number = number;
     this.name = name;
+    this.subjectCodes = subjectCodes;
     uuid = generateUuid();
   }
 
@@ -47,7 +51,8 @@ public class CourseBean {
   }
 
   public UUID generateUuid() {
-    String uniqueStr = number + name;
+    String subjectCodesStr = subjectCodes.stream().sorted().collect(Collectors.joining());
+    String uniqueStr = number + name + subjectCodesStr;
     return UUID.nameUUIDFromBytes(uniqueStr.getBytes());
   }
 
