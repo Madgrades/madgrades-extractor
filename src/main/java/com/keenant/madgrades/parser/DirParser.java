@@ -6,16 +6,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class DirParser implements TableParser {
-  private final int termCode;
+  private final TermReport report;
 
-  public DirParser(int termCode) {
-    this.termCode = termCode;
+  public DirParser(TermReport report) {
+    this.report = report;
   }
 
   @Override
   public TermReport parse(List<List<String>> rows) throws ParseException {
-    TermReport report = new TermReport(this.termCode);
-
     String subjectCode = null;
 
     for (List<String> row : rows) {
@@ -29,7 +27,7 @@ public class DirParser implements TableParser {
         String[] termSplit = joined.split(":");
         int termCode = Integer.parseInt(termSplit[termSplit.length - 1]);
 
-        if (termCode != this.termCode) {
+        if (termCode != report.getTermCode()) {
           throw new RuntimeException("termCode mismatch");
         }
       }
@@ -58,7 +56,13 @@ public class DirParser implements TableParser {
       WeekdaySchedule daySchedule = WeekdaySchedule.parse(daysStr);
       TimeSchedule timeSchedule = TimeSchedule.parse(timeStr);
 
-      Course course = report.getOrCreateCourse(subjectCode, courseNum);
+      CourseOffering course = report.findCourse(subjectCode, courseNum).orElse(null);
+
+      // sometimes, we just can't find it :)
+      if (course == null) {
+        continue;
+      }
+
       Section section = course.registerSection(
           sectionNum,
           sectionType,
@@ -66,6 +70,7 @@ public class DirParser implements TableParser {
           timeSchedule,
           room
       );
+
       section.addInstructor(instructorId);
       report.registerRoom(room);
       report.registerInstructor(instructorId, instructorName);

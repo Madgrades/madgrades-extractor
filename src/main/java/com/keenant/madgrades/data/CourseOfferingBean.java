@@ -11,10 +11,10 @@ public class CourseOfferingBean {
       bean.uuid.toString(),
       bean.courseUuid.toString(),
       bean.termCode,
-      bean.shortName
+      bean.name
   );
   public static final CsvWriter<CourseOfferingBean> CSV_WRITER = new CsvWriter<>(
-      "uuid,course_uuid,term_code,short_name", SERIALIZER
+      "uuid,course_uuid,term_code,name", SERIALIZER
   );
   public static final SqlWriter<CourseOfferingBean> SQL_WRITER = new SqlWriter<>(
       "course_offerings", SERIALIZER
@@ -23,12 +23,12 @@ public class CourseOfferingBean {
   private UUID uuid;
   private UUID courseUuid;
   private int termCode;
-  private String shortName;
+  private String name;
 
-  public CourseOfferingBean(UUID courseUuid, int termCode, String shortName) {
+  public CourseOfferingBean(UUID courseUuid, int termCode, String name) {
     this.courseUuid = courseUuid;
     this.termCode = termCode;
-    this.shortName = shortName;
+    this.name = name;
     uuid = generateUuid();
   }
 
@@ -53,7 +53,7 @@ public class CourseOfferingBean {
     return termCode;
   }
 
-  public String getShortName() {
-    return shortName;
+  public String getName() {
+    return name;
   }
 }

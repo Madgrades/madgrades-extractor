@@ -2,12 +2,16 @@ package com.keenant.madgrades.parser;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A directory of courses, rooms, instructors for a particular term.
@@ -15,8 +19,8 @@ import java.util.Set;
 public class TermReport {
   private final int termCode;
 
-  /** subject -> course num -> course */
-  private final Table<String, Integer, Course> courses = HashBasedTable.create();
+  /** course num -> course name -> courses */
+  private final Table<Integer, String, CourseOffering> courses = HashBasedTable.create();
 
   /** set of every room present in this directory */
   private final Set<Room> rooms = new HashSet<>();
@@ -40,21 +44,35 @@ public class TermReport {
     return rooms;
   }
 
-  public Collection<Course> getCourses() {
+  public Collection<CourseOffering> getCourses() {
     return courses.values();
   }
 
-  public Optional<Course> getCourse(String subjectCode, int courseNum) {
-    if (!courses.contains(subjectCode, courseNum))
-      return Optional.empty();
-    return Optional.ofNullable(courses.get(subjectCode, courseNum));
+  public Optional<CourseOffering> getCourse(int courseNum, String name) {
+    return Optional.ofNullable(courses.get(courseNum, name));
   }
 
-  public Course getOrCreateCourse(String subjectCode, int courseNum) {
-    Course course = getCourse(subjectCode, courseNum).orElse(null);
+  public Optional<CourseOffering> findCourse(String subjectCode, int courseNum) {
+    // todo: simplify this entire function to one line, this was done just for testing
+    Stream<CourseOffering> s = courses.row(courseNum).values().stream()
+        .filter(course -> course.hasSubjectCode(subjectCode));
+
+    List<CourseOffering> result = s.collect(Collectors.toList());
+    if (result.size() > 1)
+      throw new IllegalArgumentException();
+
+    return result.stream().findFirst();
+  }
+
+  public CourseOffering getOrCreateCourse(int courseNum, String name) {
+    // todo: remove this once ready
+    if (name == null)
+      throw new IllegalArgumentException();
+
+    CourseOffering course = getCourse(courseNum, name).orElse(null);
     if (course == null) {
-      course = new Course(subjectCode, courseNum);
-      courses.put(subjectCode, courseNum, course);
+      course = new CourseOffering(termCode, courseNum, name);
+      courses.put(courseNum, name, course);
     }
     return course;
   }

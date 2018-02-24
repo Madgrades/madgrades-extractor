@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 public class Section {
   // required data
-  private final String subjectCode;
   private final int courseNumber;
   private final String number;
 
@@ -24,14 +23,11 @@ public class Section {
   private Room room;
   private Set<String> instructors = new HashSet<>();
 
-  public Section(String subjectCode, int courseNumber, String number,
-      String type,
-      WeekdaySchedule daySchedule,
+  public Section(int courseNumber, String type, String number, WeekdaySchedule daySchedule,
       TimeSchedule timeSchedule, Room room) {
-    this.subjectCode = subjectCode;
     this.courseNumber = courseNumber;
-    this.number = number;
     this.type = type;
+    this.number = number;
     this.daySchedule = daySchedule;
     this.timeSchedule = timeSchedule;
     this.room = room;
@@ -39,15 +35,15 @@ public class Section {
 
   @Override
   public String toString() {
-    return subjectCode + "/" + courseNumber + "/" + type + "-" + number + "/" + timeSchedule + "/" + daySchedule
+    return courseNumber + "/" + type + "-" + number + "/" + timeSchedule + "/" + daySchedule
         + "/" + room + "/" + instructors;
   }
 
   public SectionBean toBean(UUID sectionOfferingUuid, UUID scheduleUuid) {
     return new SectionBean(
         sectionOfferingUuid,
-        number,
         type,
+        number,
         scheduleUuid
     );
   }
@@ -72,8 +68,7 @@ public class Section {
   }
 
   public boolean matches(Section section) {
-    return subjectCode.equals(section.subjectCode) &&
-        courseNumber == section.courseNumber &&
+    return courseNumber == section.courseNumber &&
         number.equals(section.number) &&
         Objects.equals(type, section.type) &&
         Objects.equals(daySchedule, section.daySchedule) &&
@@ -84,10 +79,6 @@ public class Section {
   public void addInstructor(String instructorId) {
     if (instructorId.length() > 0)
       instructors.add(instructorId);
-  }
-
-  public String getSubjectCode() {
-    return subjectCode;
   }
 
   public int getCourseNumber() {

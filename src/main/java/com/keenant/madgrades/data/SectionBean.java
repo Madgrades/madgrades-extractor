@@ -26,14 +26,14 @@ public class SectionBean implements Serializable {
 
   private UUID uuid;
   private UUID courseOfferingUuid;
-  private String number;
   private String type;
+  private String number;
   private UUID scheduleUuid;
 
-  public SectionBean(UUID courseOfferingUuid, String number, String type, UUID scheduleUuid) {
+  public SectionBean(UUID courseOfferingUuid, String type, String number, UUID scheduleUuid) {
     this.courseOfferingUuid = courseOfferingUuid;
-    this.number = number;
     this.type = type;
+    this.number = number;
     this.scheduleUuid = scheduleUuid;
     uuid = generateUuid();
   }

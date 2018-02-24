@@ -8,8 +8,9 @@ import com.keenant.madgrades.data.InstructorBean;
 import com.keenant.madgrades.data.RoomBean;
 import com.keenant.madgrades.data.ScheduleBean;
 import com.keenant.madgrades.data.SectionBean;
+import com.keenant.madgrades.data.SubjectMembershipBean;
 import com.keenant.madgrades.data.TeachingBean;
-import com.keenant.madgrades.parser.Course;
+import com.keenant.madgrades.parser.CourseOffering;
 import com.keenant.madgrades.parser.GradeType;
 import com.keenant.madgrades.parser.TermReport;
 import com.keenant.madgrades.parser.Room;
@@ -24,12 +25,13 @@ import java.util.stream.Collectors;
 public class RelationalJoiner implements ReportJoiner<RelationalDatabase> {
   private final Set<CourseBean> courses = new HashSet<>();
   private final Set<CourseOfferingBean> offerings = new HashSet<>();
+  private final Set<GradeDistributionBean> gradeDistributions = new HashSet<>();
   private final Set<SectionBean> sections = new HashSet<>();
   private final Set<ScheduleBean> schedules = new HashSet<>();
   private final Set<RoomBean> rooms = new HashSet<>();
   private final Set<InstructorBean> instructors = new HashSet<>();
+  private final Set<SubjectMembershipBean> subjectMemberships = new HashSet<>();
   private final Set<TeachingBean> teachings = new HashSet<>();
-  private final Set<GradeDistributionBean> gradeDistributions = new HashSet<>();
 
   public RelationalJoiner() {
 
@@ -39,11 +41,11 @@ public class RelationalJoiner implements ReportJoiner<RelationalDatabase> {
   public void add(TermReport report) {
     rooms.addAll(report.getRooms().stream().map(Room::toBean).collect(Collectors.toSet()));
 
-    for (Course course : report.getCourses()) {
+    for (CourseOffering course : report.getCourses()) {
       CourseBean courseBean = course.toBean();
       courses.add(courseBean);
 
-      CourseOfferingBean offeringBean = course.toCourseOfferingBean(courseBean.getUuid(), report.getTermCode());
+      CourseOfferingBean offeringBean = course.toCourseOfferingBean(courseBean.getUuid());
       offerings.add(offeringBean);
 
       for (Section section : course.getSections()) {
@@ -57,6 +59,8 @@ public class RelationalJoiner implements ReportJoiner<RelationalDatabase> {
         teachings.addAll(teachingBeans);
         instructors.addAll(instructorBeans);
       }
+
+      subjectMemberships.addAll(course.toSubjectMembershipBeans(offeringBean.getUuid()));
 
       for (Entry<String, Map<GradeType, Integer>> dist : course.getGrades()) {
         GradeDistributionBean bean = new GradeDistributionBean(
@@ -74,12 +78,13 @@ public class RelationalJoiner implements ReportJoiner<RelationalDatabase> {
     return new RelationalDatabase(
         courses,
         offerings,
+        gradeDistributions,
         sections,
         schedules,
         rooms,
         instructors,
-        teachings,
-        gradeDistributions
+        subjectMemberships,
+        teachings
     );
   }
 }

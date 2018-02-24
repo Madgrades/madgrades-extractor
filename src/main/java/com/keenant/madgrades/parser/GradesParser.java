@@ -2,9 +2,12 @@ package com.keenant.madgrades.parser;
 
 import com.keenant.madgrades.TableParser;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class GradesParser implements TableParser {
@@ -14,6 +17,26 @@ public class GradesParser implements TableParser {
     this.report = report;
   }
 
+  private void addGrades(Map<String, Map<GradeType, Integer>> backlog, String sectionNum,
+      Map<GradeType, Integer> grades) {
+    Map<GradeType, Integer> existing = backlog.computeIfAbsent(sectionNum, s -> new LinkedHashMap<>());
+
+    // add counts to existing section
+    for (Entry<GradeType, Integer> entry : grades.entrySet()) {
+      existing.put(entry.getKey(), entry.getValue() + existing.getOrDefault(entry.getKey(), 0));
+    }
+  }
+
+  private void registerCourse(String subjectCode, int courseNum, String name, Map<String, Map<GradeType, Integer>> backlog) {
+    CourseOffering offering = report.getOrCreateCourse(courseNum, name);
+
+    for (Entry<String, Map<GradeType, Integer>> entry : backlog.entrySet()) {
+      offering.addGrades(entry.getKey(), entry.getValue());
+    }
+
+    offering.registerSubject(subjectCode);
+  }
+
   @Override
   public TermReport parse(List<List<String>> rows) throws ParseException {
     String department = null;
@@ -21,6 +44,8 @@ public class GradesParser implements TableParser {
     String subjectName = null;
     String subjectCode = null;
     boolean lastWasSubjectName = false;
+
+    Map<String, Map<GradeType, Integer>> backlog = new HashMap<>();
 
     for (List<String> row : rows) {
       String joined = row.stream().collect(Collectors.joining(""));
@@ -51,8 +76,8 @@ public class GradesParser implements TableParser {
       }
 
       if (joined.contains("CourseTotal")) {
-        Course lastCourse = report.getOrCreateCourse(subjectCode, lastCourseNum);
-        lastCourse.setShortName(courseName);
+        registerCourse(subjectCode, lastCourseNum, courseName, backlog);
+        backlog.clear();
         continue;
       }
 
@@ -92,11 +117,13 @@ public class GradesParser implements TableParser {
         }
       }
 
-      Course course = report.getOrCreateCourse(subjectCode, courseNum);
-      course.setGrades(sectionNum, grades);
+      // add grades to backlog
+      addGrades(backlog, sectionNum, grades);
 
-      if (courseName != null)
-        course.setShortName(courseName);
+      if (courseName != null) {
+        registerCourse(subjectCode, courseNum, courseName, backlog);
+        backlog.clear();
+      }
 
       lastCourseNum = courseNum;
     }

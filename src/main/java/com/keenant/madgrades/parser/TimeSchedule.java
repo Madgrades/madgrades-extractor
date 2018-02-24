@@ -72,4 +72,13 @@ public class TimeSchedule {
 
     return start + "-" + end;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof TimeSchedule) {
+      TimeSchedule other = (TimeSchedule) o;
+      return other.startTime == startTime && other.endTime == endTime;
+    }
+    return false;
+  }
 }

@@ -10,23 +10,23 @@ import java.util.UUID;
 public class CourseBean {
   public static final Serializer<CourseBean> SERIALIZER = bean -> Arrays.asList(
       bean.uuid.toString(),
-      bean.subjectCode,
-      bean.number
+      bean.number,
+      bean.name
   );
   public static final CsvWriter<CourseBean> CSV_WRITER = new CsvWriter<>(
-      "uuid,subject_code,number", SERIALIZER);
+      "uuid,number,name", SERIALIZER);
 
   public static final SqlWriter<CourseBean> SQL_WRITER = new SqlWriter<>(
       "courses", SERIALIZER
   );
 
   private UUID uuid;
-  private String subjectCode;
   private int number;
+  private String name;
 
-  public CourseBean(String subjectCode, int number) {
-    this.subjectCode = subjectCode;
+  public CourseBean(int number, String name) {
     this.number = number;
+    this.name = name;
     uuid = generateUuid();
   }
 
@@ -38,8 +38,8 @@ public class CourseBean {
     return uuid;
   }
 
-  public String getSubjectCode() {
-    return subjectCode;
+  public String getName() {
+    return name;
   }
 
   public int getNumber() {
@@ -47,7 +47,7 @@ public class CourseBean {
   }
 
   public UUID generateUuid() {
-    String uniqueStr = subjectCode + number;
+    String uniqueStr = number + name;
     return UUID.nameUUIDFromBytes(uniqueStr.getBytes());
   }
 
@@ -58,6 +58,6 @@ public class CourseBean {
 
   @Override
   public int hashCode() {
-    return Objects.hash(subjectCode, number);
+    return Objects.hash(number, name);
   }
 }

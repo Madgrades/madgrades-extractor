@@ -46,4 +46,14 @@ public class WeekdaySchedule {
         .map(Constants.DAY_TO_STR::get)
         .collect(Collectors.joining(" "));
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof WeekdaySchedule) {
+      WeekdaySchedule other = (WeekdaySchedule) o;
+      return other.days.size() == days.size() &&
+          other.days.containsAll(days);
+    }
+    return false;
+  }
 }
