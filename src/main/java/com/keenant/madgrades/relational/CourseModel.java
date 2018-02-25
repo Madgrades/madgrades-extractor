@@ -1,4 +1,4 @@
-package com.keenant.madgrades.data;
+package com.keenant.madgrades.relational;
 
 import com.keenant.madgrades.util.CsvWriter;
 import com.keenant.madgrades.util.Serializer;
@@ -9,16 +9,16 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class CourseBean {
-  public static final Serializer<CourseBean> SERIALIZER = bean -> Arrays.asList(
+public class CourseModel {
+  public static final Serializer<CourseModel> SERIALIZER = bean -> Arrays.asList(
       bean.uuid.toString(),
       bean.number,
       bean.name
   );
-  public static final CsvWriter<CourseBean> CSV_WRITER = new CsvWriter<>(
+  public static final CsvWriter<CourseModel> CSV_WRITER = new CsvWriter<>(
       "uuid,number,name", SERIALIZER);
 
-  public static final SqlWriter<CourseBean> SQL_WRITER = new SqlWriter<>(
+  public static final SqlWriter<CourseModel> SQL_WRITER = new SqlWriter<>(
       "courses", SERIALIZER
   );
 
@@ -27,15 +27,11 @@ public class CourseBean {
   private String name;
   private Set<String> subjectCodes;
 
-  public CourseBean(int number, String name, Set<String> subjectCodes) {
+  public CourseModel(int number, String name, Set<String> subjectCodes) {
     this.number = number;
     this.name = name;
     this.subjectCodes = subjectCodes;
     uuid = generateUuid();
-  }
-
-  public CourseBean() {
-
   }
 
   public UUID getUuid() {
@@ -58,7 +54,7 @@ public class CourseBean {
 
   @Override
   public boolean equals(Object o) {
-    return o instanceof CourseBean && Objects.equals(((CourseBean) o).uuid, uuid);
+    return o instanceof CourseModel && Objects.equals(((CourseModel) o).uuid, uuid);
   }
 
   @Override

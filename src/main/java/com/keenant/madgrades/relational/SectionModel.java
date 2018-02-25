@@ -1,4 +1,4 @@
-package com.keenant.madgrades.data;
+package com.keenant.madgrades.relational;
 
 import com.keenant.madgrades.util.CsvWriter;
 import com.keenant.madgrades.util.Serializer;
@@ -8,8 +8,8 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-public class SectionBean implements Serializable {
-  public static final Serializer<SectionBean> SERIALIZER = bean -> Arrays.asList(
+public class SectionModel implements Serializable {
+  public static final Serializer<SectionModel> SERIALIZER = bean -> Arrays.asList(
       bean.uuid.toString(),
       bean.courseOfferingUuid.toString(),
       bean.type,
@@ -17,11 +17,11 @@ public class SectionBean implements Serializable {
       bean.roomUuid.toString(),
       bean.scheduleUuid.toString()
   );
-  public static final CsvWriter<SectionBean> CSV_WRITER = new CsvWriter<>(
+  public static final CsvWriter<SectionModel> CSV_WRITER = new CsvWriter<>(
       "uuid,course_offering_uuid,section_type,number,room_uuid,schedule_uuid",
       SERIALIZER
   );
-  public static final SqlWriter<SectionBean> SQL_WRITER = new SqlWriter<>(
+  public static final SqlWriter<SectionModel> SQL_WRITER = new SqlWriter<>(
       "sections", SERIALIZER
   );
 
@@ -32,17 +32,13 @@ public class SectionBean implements Serializable {
   private UUID roomUuid;
   private UUID scheduleUuid;
 
-  public SectionBean(UUID courseOfferingUuid, String type, String number, UUID roomUuid, UUID scheduleUuid) {
+  public SectionModel(UUID courseOfferingUuid, String type, String number, UUID roomUuid, UUID scheduleUuid) {
     this.courseOfferingUuid = courseOfferingUuid;
     this.type = type;
     this.number = number;
     this.roomUuid = roomUuid;
     this.scheduleUuid = scheduleUuid;
     uuid = generateUuid();
-  }
-
-  public SectionBean() {
-
   }
 
   private UUID generateUuid() {
@@ -52,8 +48,8 @@ public class SectionBean implements Serializable {
 
   @Override
   public boolean equals(Object o) {
-    if (o instanceof SectionBean) {
-      SectionBean other = (SectionBean) o;
+    if (o instanceof SectionModel) {
+      SectionModel other = (SectionModel) o;
       return uuid.equals(other.uuid) &&
           courseOfferingUuid.equals(other.courseOfferingUuid) &&
           number.equals(other.number) &&

@@ -1,4 +1,4 @@
-package com.keenant.madgrades.data;
+package com.keenant.madgrades.relational;
 
 import com.keenant.madgrades.parser.Section;
 import com.keenant.madgrades.util.CsvWriter;
@@ -10,17 +10,17 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class CourseOfferingBean {
-  public static final Serializer<CourseOfferingBean> SERIALIZER = bean -> Arrays.asList(
+public class CourseOfferingModel {
+  public static final Serializer<CourseOfferingModel> SERIALIZER = bean -> Arrays.asList(
       bean.uuid.toString(),
       bean.courseUuid.toString(),
       bean.termCode,
       bean.name
   );
-  public static final CsvWriter<CourseOfferingBean> CSV_WRITER = new CsvWriter<>(
+  public static final CsvWriter<CourseOfferingModel> CSV_WRITER = new CsvWriter<>(
       "uuid,course_uuid,term_code,name", SERIALIZER
   );
-  public static final SqlWriter<CourseOfferingBean> SQL_WRITER = new SqlWriter<>(
+  public static final SqlWriter<CourseOfferingModel> SQL_WRITER = new SqlWriter<>(
       "course_offerings", SERIALIZER
   );
 
@@ -31,16 +31,12 @@ public class CourseOfferingBean {
 
   private Set<Section> sections; // this is just used to distinguish from other courses
 
-  public CourseOfferingBean(UUID courseUuid, int termCode, String name, Set<Section> sections) {
+  public CourseOfferingModel(UUID courseUuid, int termCode, String name, Set<Section> sections) {
     this.courseUuid = courseUuid;
     this.termCode = termCode;
     this.name = name;
     this.sections = sections;
     uuid = generateUuid();
-  }
-
-  public CourseOfferingBean() {
-
   }
 
   private UUID generateUuid() {
@@ -52,8 +48,8 @@ public class CourseOfferingBean {
 
   @Override
   public boolean equals(Object o) {
-    if (o instanceof CourseOfferingBean) {
-      CourseOfferingBean other = (CourseOfferingBean) o;
+    if (o instanceof CourseOfferingModel) {
+      CourseOfferingModel other = (CourseOfferingModel) o;
       return uuid.equals(other.uuid);
     }
     return false;

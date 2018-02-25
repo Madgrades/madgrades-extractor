@@ -1,72 +1,106 @@
 package com.keenant.madgrades.relational;
 
-import com.keenant.madgrades.data.CourseBean;
-import com.keenant.madgrades.data.CourseOfferingBean;
-import com.keenant.madgrades.data.GradeDistributionBean;
-import com.keenant.madgrades.data.InstructorBean;
-import com.keenant.madgrades.data.RoomBean;
-import com.keenant.madgrades.data.ScheduleBean;
-import com.keenant.madgrades.data.SectionBean;
-import com.keenant.madgrades.data.SubjectMembershipBean;
-import com.keenant.madgrades.data.TeachingBean;
-import com.keenant.madgrades.util.CsvWriter;
+import com.google.common.collect.Sets;
+import com.keenant.madgrades.ReportJoiner;
+import com.keenant.madgrades.parser.CourseOffering;
+import com.keenant.madgrades.parser.GradeType;
+import com.keenant.madgrades.parser.Section;
+import com.keenant.madgrades.parser.TermReport;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
-public class RelationalDatabase {
+public class RelationalDatabase implements ReportJoiner {
+  private final Set<CourseModel> courses = new HashSet<>();
+  private final Set<CourseOfferingModel> offerings = new HashSet<>();
+  private final Set<GradeDistributionModel> gradeDistributions = new HashSet<>();
+  private final Set<SectionModel> sections = new HashSet<>();
+  private final Set<ScheduleModel> schedules = new HashSet<>();
+  private final Set<RoomModel> rooms = new HashSet<>();
+  private final Set<InstructorModel> instructors = new HashSet<>();
+  private final Set<SubjectMembershipModel> subjectMemberships = new HashSet<>();
+  private final Set<TeachingModel> teachings = new HashSet<>();
 
-  private final Set<CourseBean> courses;
-  private final Set<CourseOfferingBean> offerings;
-  private final Set<GradeDistributionBean> gradeDistributions;
-  private final Set<SectionBean> sections;
-  private final Set<ScheduleBean> schedules;
-  private final Set<RoomBean> rooms;
-  private final Set<InstructorBean> instructors;
-  private final Set<SubjectMembershipBean> subjectMemberships;
-  private final Set<TeachingBean> teachings;
+  @Override
+  public void add(TermReport report) {
+    for (CourseOffering course : report.getCourses()) {
+      CourseModel courseBean = null;
 
-  public RelationalDatabase(
-      Set<CourseBean> courses, Set<CourseOfferingBean> offerings,
-      Set<GradeDistributionBean> gradeDistributions, Set<SectionBean> sections,
-      Set<ScheduleBean> schedules, Set<RoomBean> rooms, Set<InstructorBean> instructors,
-      Set<SubjectMembershipBean> subjectMemberships, Set<TeachingBean> teachings) {
-    this.courses = courses;
-    this.offerings = offerings;
-    this.gradeDistributions = gradeDistributions;
-    this.sections = sections;
-    this.schedules = schedules;
-    this.rooms = rooms;
-    this.instructors = instructors;
-    this.subjectMemberships = subjectMemberships;
-    this.teachings = teachings;
+      for (CourseModel existingBean : courses) {
+        if (Objects.equals(course.getNumber(), existingBean.getNumber())) {
+          Set<String> overlap = Sets.intersection(course.getSubjectCodes(), existingBean.getSubjectCodes());
+          if (!overlap.isEmpty()) {
+            courseBean = existingBean;
+            courseBean.getSubjectCodes().addAll(course.getSubjectCodes());
+          }
+        }
+      }
+
+      if (courseBean == null) {
+        courseBean = course.toBean();
+        courses.add(courseBean);
+      }
+
+      CourseOfferingModel offeringBean = course.toCourseOfferingBean(courseBean.getUuid());
+      offerings.add(offeringBean);
+
+      for (Section section : course.getSections()) {
+        ScheduleModel scheduleBean = section.toScheduleBean();
+        RoomModel roomBean = section.getRoom().toBean();
+        SectionModel sectionBean = section.toBean(offeringBean.getUuid(), roomBean.getUuid(), scheduleBean.getUuid());
+        List<TeachingModel> teachingBeans = section.toTeachingBeans(sectionBean.getUuid());
+        List<InstructorModel> instructorBeans = section.toInstructorBeans(report.getInstructorNames());
+
+        rooms.add(roomBean);
+        sections.add(sectionBean);
+        schedules.add(scheduleBean);
+        teachings.addAll(teachingBeans);
+        instructors.addAll(instructorBeans);
+      }
+
+      subjectMemberships.addAll(course.toSubjectMembershipBeans(offeringBean.getUuid()));
+
+      for (Entry<String, Map<GradeType, Integer>> dist : course.getGrades()) {
+        GradeDistributionModel bean = new GradeDistributionModel(
+            offeringBean.getUuid(),
+            dist.getKey(),
+            dist.getValue()
+        );
+        gradeDistributions.add(bean);
+      }
+    }
   }
 
   public void writeSql(File directory) throws IOException {
     directory.mkdirs();
 
-    CourseBean.SQL_WRITER.write(new File(directory, "courses.sql"), courses);
-    CourseOfferingBean.SQL_WRITER.write(new File(directory, "course_offerings.sql"), offerings);
-    GradeDistributionBean.SQL_WRITER.write(new File(directory, "grade_distributions.sql"), gradeDistributions);
-    SectionBean.SQL_WRITER.write(new File(directory, "sections.sql"), sections);
-    ScheduleBean.SQL_WRITER.write(new File(directory, "schedules.sql"), schedules);
-    RoomBean.SQL_WRITER.write(new File(directory, "rooms.sql"), rooms);
-    InstructorBean.SQL_WRITER.write(new File(directory, "instructors.sql"), instructors);
-    SubjectMembershipBean.SQL_WRITER.write(new File(directory, "subject_memberships.sql"), subjectMemberships);
-    TeachingBean.SQL_WRITER.write(new File(directory, "teachings.sql"), teachings);
+    CourseModel.SQL_WRITER.write(new File(directory, "courses.sql"), courses);
+    CourseOfferingModel.SQL_WRITER.write(new File(directory, "course_offerings.sql"), offerings);
+    GradeDistributionModel.SQL_WRITER.write(new File(directory, "grade_distributions.sql"), gradeDistributions);
+    SectionModel.SQL_WRITER.write(new File(directory, "sections.sql"), sections);
+    ScheduleModel.SQL_WRITER.write(new File(directory, "schedules.sql"), schedules);
+    RoomModel.SQL_WRITER.write(new File(directory, "rooms.sql"), rooms);
+    InstructorModel.SQL_WRITER.write(new File(directory, "instructors.sql"), instructors);
+    SubjectMembershipModel.SQL_WRITER.write(new File(directory, "subject_memberships.sql"), subjectMemberships);
+    TeachingModel.SQL_WRITER.write(new File(directory, "teachings.sql"), teachings);
   }
 
   public void writeCsv(File directory) throws IOException {
     directory.mkdirs();
 
-    CourseBean.CSV_WRITER.write(new File(directory, "courses.csv"), courses);
-    CourseOfferingBean.CSV_WRITER.write(new File(directory, "course_offerings.csv"), offerings);
-    GradeDistributionBean.CSV_WRITER.write(new File(directory, "grade_distributions.csv"), gradeDistributions);
-    SectionBean.CSV_WRITER.write(new File(directory, "sections.csv"), sections);
-    ScheduleBean.CSV_WRITER.write(new File(directory, "schedules.csv"), schedules);
-    RoomBean.CSV_WRITER.write(new File(directory, "rooms.csv"), rooms);
-    InstructorBean.CSV_WRITER.write(new File(directory, "instructors.csv"), instructors);
-    SubjectMembershipBean.CSV_WRITER.write(new File(directory, "subject_memberships.csv"), subjectMemberships);
-    TeachingBean.CSV_WRITER.write(new File(directory, "teachings.csv"), teachings);
+    CourseModel.CSV_WRITER.write(new File(directory, "courses.csv"), courses);
+    CourseOfferingModel.CSV_WRITER.write(new File(directory, "course_offerings.csv"), offerings);
+    GradeDistributionModel.CSV_WRITER.write(new File(directory, "grade_distributions.csv"), gradeDistributions);
+    SectionModel.CSV_WRITER.write(new File(directory, "sections.csv"), sections);
+    ScheduleModel.CSV_WRITER.write(new File(directory, "schedules.csv"), schedules);
+    RoomModel.CSV_WRITER.write(new File(directory, "rooms.csv"), rooms);
+    InstructorModel.CSV_WRITER.write(new File(directory, "instructors.csv"), instructors);
+    SubjectMembershipModel.CSV_WRITER.write(new File(directory, "subject_memberships.csv"), subjectMemberships);
+    TeachingModel.CSV_WRITER.write(new File(directory, "teachings.csv"), teachings);
   }
 }

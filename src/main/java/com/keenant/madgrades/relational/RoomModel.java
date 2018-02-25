@@ -1,4 +1,4 @@
-package com.keenant.madgrades.data;
+package com.keenant.madgrades.relational;
 
 import com.keenant.madgrades.util.CsvWriter;
 import com.keenant.madgrades.util.Serializer;
@@ -9,16 +9,16 @@ import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
-public class RoomBean implements Serializable {
-  public static final Serializer<RoomBean> SERIALIZER = bean -> Arrays.asList(
+public class RoomModel implements Serializable {
+  public static final Serializer<RoomModel> SERIALIZER = bean -> Arrays.asList(
       bean.uuid.toString(),
       bean.facilityCode,
       bean.roomCode
   );
-  public static final CsvWriter<RoomBean> CSV_WRITER = new CsvWriter<>(
+  public static final CsvWriter<RoomModel> CSV_WRITER = new CsvWriter<>(
       "uuid,facility_code,room_code", SERIALIZER
   );
-  public static final SqlWriter<RoomBean> SQL_WRITER = new SqlWriter<>(
+  public static final SqlWriter<RoomModel> SQL_WRITER = new SqlWriter<>(
       "rooms", SERIALIZER
   );
 
@@ -27,14 +27,10 @@ public class RoomBean implements Serializable {
   private String facilityCode;
   private String roomCode;
 
-  public RoomBean(String facilityCode, @Nullable String roomCode) {
+  public RoomModel(String facilityCode, @Nullable String roomCode) {
     this.facilityCode = facilityCode;
     this.roomCode = roomCode;
     uuid = generateUuid();
-  }
-
-  public RoomBean() {
-
   }
 
   private UUID generateUuid() {
@@ -58,7 +54,7 @@ public class RoomBean implements Serializable {
 
   @Override
   public boolean equals(Object o) {
-    return o instanceof RoomBean && Objects.equals(uuid, ((RoomBean) o).uuid);
+    return o instanceof RoomModel && Objects.equals(uuid, ((RoomModel) o).uuid);
   }
 
   @Override

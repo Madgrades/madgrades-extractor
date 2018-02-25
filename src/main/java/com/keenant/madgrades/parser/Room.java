@@ -1,6 +1,6 @@
 package com.keenant.madgrades.parser;
 
-import com.keenant.madgrades.data.RoomBean;
+import com.keenant.madgrades.relational.RoomModel;
 import java.util.Objects;
 
 /**
@@ -61,7 +61,7 @@ public class Room {
     return Objects.hash(facilityCode, roomCode);
   }
 
-  public RoomBean toBean() {
-    return new RoomBean(facilityCode, roomCode);
+  public RoomModel toBean() {
+    return new RoomModel(facilityCode, roomCode);
   }
 }

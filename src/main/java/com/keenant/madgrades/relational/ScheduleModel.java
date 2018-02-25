@@ -1,4 +1,4 @@
-package com.keenant.madgrades.data;
+package com.keenant.madgrades.relational;
 
 import com.keenant.madgrades.parser.TimeSchedule;
 import com.keenant.madgrades.parser.WeekdaySchedule;
@@ -11,8 +11,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ScheduleBean {
-  public static final Serializer<ScheduleBean> SERIALIZER = bean -> Arrays.asList(
+public class ScheduleModel {
+  public static final Serializer<ScheduleModel> SERIALIZER = bean -> Arrays.asList(
       bean.uuid.toString(),
       bean.startTime,
       bean.endTime,
@@ -24,11 +24,11 @@ public class ScheduleBean {
       bean.sat,
       bean.sun
   );
-  public static final CsvWriter<ScheduleBean> CSV_WRITER = new CsvWriter<>(
+  public static final CsvWriter<ScheduleModel> CSV_WRITER = new CsvWriter<>(
       "uuid,start_time,end_time,mon,tues,wed,thurs,fri,sat,sun",
       SERIALIZER
   );
-  public static final SqlWriter<ScheduleBean> SQL_WRITER = new SqlWriter<>(
+  public static final SqlWriter<ScheduleModel> SQL_WRITER = new SqlWriter<>(
       "schedules", SERIALIZER
   );
 
@@ -43,7 +43,7 @@ public class ScheduleBean {
   private boolean sat;
   private boolean sun;
 
-  public ScheduleBean(int startTime, int endTime, boolean mon, boolean tues, boolean wed,
+  public ScheduleModel(int startTime, int endTime, boolean mon, boolean tues, boolean wed,
       boolean thurs, boolean fri, boolean sat, boolean sun) {
     this.startTime = startTime;
     this.endTime = endTime;
@@ -72,7 +72,7 @@ public class ScheduleBean {
     return UUID.nameUUIDFromBytes(uniqueStr.getBytes());
   }
 
-  public ScheduleBean(TimeSchedule time, WeekdaySchedule days) {
+  public ScheduleModel(TimeSchedule time, WeekdaySchedule days) {
     this(time.getStartTime(), time.getEndTime(),
         days.isScheduled(DayOfWeek.MONDAY),
         days.isScheduled(DayOfWeek.TUESDAY),
@@ -84,14 +84,14 @@ public class ScheduleBean {
     );
   }
 
-  public ScheduleBean() {
+  public ScheduleModel() {
 
   }
 
   @Override
   public boolean equals(Object o) {
-    if (o instanceof ScheduleBean) {
-      ScheduleBean other = (ScheduleBean) o;
+    if (o instanceof ScheduleModel) {
+      ScheduleModel other = (ScheduleModel) o;
       return startTime == other.startTime && endTime == other.endTime &&
           mon == other.mon && tues == other.tues && wed == other.wed &&
           thurs == other.thurs && fri == other.fri && sat == other.sat &&

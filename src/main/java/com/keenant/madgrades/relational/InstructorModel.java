@@ -1,4 +1,4 @@
-package com.keenant.madgrades.data;
+package com.keenant.madgrades.relational;
 
 import com.keenant.madgrades.util.CsvWriter;
 import com.keenant.madgrades.util.Serializer;
@@ -6,33 +6,33 @@ import com.keenant.madgrades.util.SqlWriter;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class InstructorBean {
-  public static final Serializer<InstructorBean> SERIALIZER = bean -> Arrays.asList(
+public class InstructorModel {
+  public static final Serializer<InstructorModel> SERIALIZER = bean -> Arrays.asList(
       bean.id,
       bean.name
   );
-  public static final CsvWriter<InstructorBean> CSV_WRITER = new CsvWriter<>(
+  public static final CsvWriter<InstructorModel> CSV_WRITER = new CsvWriter<>(
       "id,name", SERIALIZER
   );
-  public static final SqlWriter<InstructorBean> SQL_WRITER = new SqlWriter<>(
+  public static final SqlWriter<InstructorModel> SQL_WRITER = new SqlWriter<>(
       "instructors", SERIALIZER
   );
 
   private String id;
   private String name;
 
-  public InstructorBean(String id, String name) {
+  public InstructorModel(String id, String name) {
     this.id = id;
     this.name = name;
   }
 
-  public InstructorBean() {
+  public InstructorModel() {
 
   }
 
   @Override
   public boolean equals(Object o) {
-    return o instanceof InstructorBean && id.equals(((InstructorBean) o).id);
+    return o instanceof InstructorModel && id.equals(((InstructorModel) o).id);
   }
 
   @Override

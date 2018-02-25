@@ -1,13 +1,12 @@
 package com.keenant.madgrades.parser;
 
-import com.keenant.madgrades.data.InstructorBean;
-import com.keenant.madgrades.data.ScheduleBean;
-import com.keenant.madgrades.data.SectionBean;
-import com.keenant.madgrades.data.TeachingBean;
+import com.keenant.madgrades.relational.InstructorModel;
+import com.keenant.madgrades.relational.ScheduleModel;
+import com.keenant.madgrades.relational.SectionModel;
+import com.keenant.madgrades.relational.TeachingModel;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -39,8 +38,8 @@ public class Section {
         + "/" + room + "/" + instructors;
   }
 
-  public SectionBean toBean(UUID sectionOfferingUuid, UUID roomUuid, UUID scheduleUuid) {
-    return new SectionBean(
+  public SectionModel toBean(UUID sectionOfferingUuid, UUID roomUuid, UUID scheduleUuid) {
+    return new SectionModel(
         sectionOfferingUuid,
         type,
         number,
@@ -49,22 +48,22 @@ public class Section {
     );
   }
 
-  public ScheduleBean toScheduleBean() {
-    return new ScheduleBean(
+  public ScheduleModel toScheduleBean() {
+    return new ScheduleModel(
         timeSchedule,
         daySchedule
     );
   }
 
-  public List<InstructorBean> toInstructorBeans(Map<String, String> instructorNames) {
+  public List<InstructorModel> toInstructorBeans(Map<String, String> instructorNames) {
     return instructors.stream()
-        .map(instructorId -> new InstructorBean(instructorId, instructorNames.get(instructorId)))
+        .map(instructorId -> new InstructorModel(instructorId, instructorNames.get(instructorId)))
         .collect(Collectors.toList());
   }
 
-  public List<TeachingBean> toTeachingBeans(UUID sectionUuid) {
+  public List<TeachingModel> toTeachingBeans(UUID sectionUuid) {
     return instructors.stream()
-        .map(instructorId -> new TeachingBean(sectionUuid, instructorId))
+        .map(instructorId -> new TeachingModel(sectionUuid, instructorId))
         .collect(Collectors.toList());
   }
 

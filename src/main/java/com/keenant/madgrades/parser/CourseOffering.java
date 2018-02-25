@@ -1,8 +1,8 @@
 package com.keenant.madgrades.parser;
 
-import com.keenant.madgrades.data.CourseBean;
-import com.keenant.madgrades.data.CourseOfferingBean;
-import com.keenant.madgrades.data.SubjectMembershipBean;
+import com.keenant.madgrades.relational.CourseModel;
+import com.keenant.madgrades.relational.CourseOfferingModel;
+import com.keenant.madgrades.relational.SubjectMembershipModel;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -62,17 +62,17 @@ public class CourseOffering {
     return sections;
   }
 
-  public CourseBean toBean() {
-    return new CourseBean(number, name, subjectCodes);
+  public CourseModel toBean() {
+    return new CourseModel(number, name, subjectCodes);
   }
 
-  public CourseOfferingBean toCourseOfferingBean(UUID courseOfferingUuid) {
-    return new CourseOfferingBean(courseOfferingUuid, termCode, name, sections);
+  public CourseOfferingModel toCourseOfferingBean(UUID courseOfferingUuid) {
+    return new CourseOfferingModel(courseOfferingUuid, termCode, name, sections);
   }
 
-  public Set<SubjectMembershipBean> toSubjectMembershipBeans(UUID courseUuid) {
+  public Set<SubjectMembershipModel> toSubjectMembershipBeans(UUID courseUuid) {
     return subjectCodes.stream()
-        .map(subjectCode -> new SubjectMembershipBean(subjectCode, courseUuid))
+        .map(subjectCode -> new SubjectMembershipModel(subjectCode, courseUuid))
         .collect(Collectors.toSet());
   }
 

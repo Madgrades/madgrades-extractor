@@ -1,4 +1,4 @@
-package com.keenant.madgrades.data;
+package com.keenant.madgrades.relational;
 
 import static com.keenant.madgrades.parser.GradeType.*;
 
@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
-public class GradeDistributionBean {
-  public static final Serializer<GradeDistributionBean> SERIALIZER = bean -> Arrays.asList(
+public class GradeDistributionModel {
+  public static final Serializer<GradeDistributionModel> SERIALIZER = bean -> Arrays.asList(
       bean.courseUuid.toString(),
       bean.sectionNum,
       bean.a_count,
@@ -31,11 +31,11 @@ public class GradeDistributionBean {
       bean.nr_count,
       bean.other_count
   );
-  public static final CsvWriter<GradeDistributionBean> CSV_WRITER = new CsvWriter<>(
+  public static final CsvWriter<GradeDistributionModel> CSV_WRITER = new CsvWriter<>(
       "course_offering_uuid,section_number,a_count,ab_count,b_count,bc_count,c_count,"
           + "d_count,f_count,s_count,u_count,cr_count,n_count,p_count,i_count,nw_count,"
           + "nr_count,other_count", SERIALIZER);
-  public static final SqlWriter<GradeDistributionBean> SQL_WRITER = new SqlWriter<>(
+  public static final SqlWriter<GradeDistributionModel> SQL_WRITER = new SqlWriter<>(
       "grade_distributions", SERIALIZER
   );
 
@@ -58,7 +58,7 @@ public class GradeDistributionBean {
   private int nr_count;
   private int other_count;
 
-  public GradeDistributionBean(UUID courseOfferingUuid, String sectionNum, int a_count, int ab_count,
+  public GradeDistributionModel(UUID courseOfferingUuid, String sectionNum, int a_count, int ab_count,
       int b_count, int bc_count, int c_count, int d_count, int f_count, int s_count,
       int u_count, int cr_count, int n_count, int p_count, int i_count,
       int nw_count, int nr_count, int other_count) {
@@ -82,7 +82,7 @@ public class GradeDistributionBean {
     this.other_count = other_count;
   }
   
-  public GradeDistributionBean(UUID courseOfferingUuid, String sectionNum, Map<GradeType, Integer> grades) {
+  public GradeDistributionModel(UUID courseOfferingUuid, String sectionNum, Map<GradeType, Integer> grades) {
     this(
         courseOfferingUuid,
         sectionNum,
@@ -105,7 +105,7 @@ public class GradeDistributionBean {
     );
   }
 
-  public GradeDistributionBean() {
+  public GradeDistributionModel() {
 
   }
 }

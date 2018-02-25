@@ -24,6 +24,11 @@
       <artifactId>guava</artifactId>
       <version>24.0-jre</version>
     </dependency>
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.11.2</version>
+    </dependency>
   </dependencies>
 
   <build>

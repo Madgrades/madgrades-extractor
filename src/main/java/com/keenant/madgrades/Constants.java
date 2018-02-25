@@ -29,4 +29,10 @@ public class Constants {
 
   public static final Map<DayOfWeek, String> DAY_TO_STR = STR_TO_DAY.entrySet().stream()
       .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+
+  /** page which hosts links to grade distribution reports */
+  public static final String GRADE_REPORTS_URL = "https://registrar.wisc.edu/grade-reports/";
+
+  /** page which hosts links to dir reports */
+  public static final String DIR_REPORTS_URL = "https://registrar.wisc.edu/current-reports/";
 }
