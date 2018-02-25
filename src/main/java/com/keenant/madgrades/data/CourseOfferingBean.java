@@ -1,6 +1,6 @@
 package com.keenant.madgrades.data;
 
-import com.keenant.madgrades.parser.CourseOffering;
+import com.keenant.madgrades.parser.Section;
 import com.keenant.madgrades.util.CsvWriter;
 import com.keenant.madgrades.util.Serializer;
 import com.keenant.madgrades.util.SqlWriter;
@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class CourseOfferingBean {
@@ -29,13 +28,14 @@ public class CourseOfferingBean {
   private UUID courseUuid;
   private int termCode;
   private String name;
-  private Set<String> sectionNumbers; // this is just used to distinguish
 
-  public CourseOfferingBean(UUID courseUuid, int termCode, String name, Set<String> sectionNumbers) {
+  private Set<Section> sections; // this is just used to distinguish from other courses
+
+  public CourseOfferingBean(UUID courseUuid, int termCode, String name, Set<Section> sections) {
     this.courseUuid = courseUuid;
     this.termCode = termCode;
     this.name = name;
-    this.sectionNumbers = sectionNumbers;
+    this.sections = sections;
     uuid = generateUuid();
   }
 
@@ -44,7 +44,8 @@ public class CourseOfferingBean {
   }
 
   private UUID generateUuid() {
-    String sectionNumbersStr = sectionNumbers.stream().sorted().collect(Collectors.joining());
+    // todo: this is not good probably
+    String sectionNumbersStr = sections.stream().map(Object::toString).sorted().collect(Collectors.joining());
     String uniqueStr = courseUuid.toString() + termCode + name + sectionNumbersStr;
     return UUID.nameUUIDFromBytes(uniqueStr.getBytes());
   }
@@ -60,8 +61,8 @@ public class CourseOfferingBean {
 
   @Override
   public int hashCode() {
-    String subjectCodesStr = sectionNumbers.stream().sorted().collect(Collectors.joining());
-    return Objects.hash(uuid, courseUuid, termCode, name, subjectCodesStr);
+    String sectionNumbersStr = sections.stream().map(Object::toString).sorted().collect(Collectors.joining());
+    return Objects.hash(uuid, courseUuid, termCode, name, sectionNumbersStr);
   }
 
   public UUID getUuid() {

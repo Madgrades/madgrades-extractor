@@ -8,8 +8,7 @@ import java.util.Objects;
  */
 public class Room {
   public static Room ONLINE = new Room("ONLINE", null);
-  public static Room OFF_CAMPUS = new Room("OFF CAMPUS", null);
-  public static Room NONE = new Room("NONE", null);
+  public static Room OTHER = new Room("OTHER", null);
 
   private final String facilityCode;
   private final String roomCode;
@@ -23,9 +22,9 @@ public class Room {
     if (roomStr.equals("ONLINE"))
       return ONLINE;
     else if (roomStr.equals("OFF CAMPUS"))
-      return OFF_CAMPUS;
+      return OTHER;
     else if (roomStr.equals(""))
-      return NONE;
+      return OTHER;
 
     String[] split = roomStr.split(" ");
 

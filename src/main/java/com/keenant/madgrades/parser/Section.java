@@ -68,16 +68,27 @@ public class Section {
         .collect(Collectors.toList());
   }
 
-  public boolean matches(Section section) {
-    return courseNumber == section.courseNumber &&
-        number.equals(section.number) &&
-        Objects.equals(type, section.type) &&
-        Objects.equals(daySchedule, section.daySchedule) &&
-        Objects.equals(timeSchedule, section.timeSchedule) &&
-        Objects.equals(room, section.room);
+  public boolean isSameMeeting(Section other) {
+    return courseNumber == other.courseNumber &&
+        number.equals(other.number) &&
+        type.equals(other.type) &&
+        daySchedule.equals(other.daySchedule) &&
+        timeSchedule.equals(other.timeSchedule) &&
+        room.equals(other.room);
   }
 
-  public void addInstructor(String instructorId) {
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof Section) {
+      Section other = (Section) o;
+      return isSameMeeting(other) &&
+          instructors.size() == other.instructors.size() &&
+          instructors.containsAll(other.instructors);
+    }
+    return false;
+  }
+
+  public void registerInstructor(String instructorId) {
     if (instructorId.length() > 0)
       instructors.add(instructorId);
   }
@@ -104,5 +115,13 @@ public class Section {
 
   public Room getRoom() {
     return room;
+  }
+
+  public Set<String> getInstructors() {
+    return instructors;
+  }
+
+  public void registerInstructors(Set<String> instructors) {
+    this.instructors.addAll(instructors);
   }
 }

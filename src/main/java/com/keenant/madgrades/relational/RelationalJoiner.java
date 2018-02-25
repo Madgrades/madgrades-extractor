@@ -1,5 +1,6 @@
 package com.keenant.madgrades.relational;
 
+import com.google.common.collect.Sets;
 import com.keenant.madgrades.ReportJoiner;
 import com.keenant.madgrades.data.CourseBean;
 import com.keenant.madgrades.data.CourseOfferingBean;
@@ -14,10 +15,12 @@ import com.keenant.madgrades.parser.CourseOffering;
 import com.keenant.madgrades.parser.GradeType;
 import com.keenant.madgrades.parser.Section;
 import com.keenant.madgrades.parser.TermReport;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 public class RelationalJoiner implements ReportJoiner<RelationalDatabase> {
@@ -38,8 +41,22 @@ public class RelationalJoiner implements ReportJoiner<RelationalDatabase> {
   @Override
   public void add(TermReport report) {
     for (CourseOffering course : report.getCourses()) {
-      CourseBean courseBean = course.toBean();
-      courses.add(courseBean);
+      CourseBean courseBean = null;
+
+      for (CourseBean existingBean : courses) {
+        if (Objects.equals(course.getNumber(), existingBean.getNumber())) {
+          Set<String> overlap = Sets.intersection(course.getSubjectCodes(), existingBean.getSubjectCodes());
+          if (!overlap.isEmpty()) {
+            courseBean = existingBean;
+            courseBean.getSubjectCodes().addAll(course.getSubjectCodes());
+          }
+        }
+      }
+
+      if (courseBean == null) {
+        courseBean = course.toBean();
+        courses.add(courseBean);
+      }
 
       CourseOfferingBean offeringBean = course.toCourseOfferingBean(courseBean.getUuid());
       offerings.add(offeringBean);

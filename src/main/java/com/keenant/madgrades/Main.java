@@ -35,21 +35,21 @@ public class Main {
     List<List<String>> rows;
     TableParser parser;
 
-    // grades first
-    {
-      stream = new FileInputStream(gradesUrl);
-      extractor = Constants.GRADES_EXTRACTOR;
-      rows = extractor.extract(stream);
-      parser = new GradesParser(report);
-      parser.parse(rows);
-    }
-
-    // dir next
+    // dir
     {
       stream = new FileInputStream(dirUrl);
       extractor = Constants.DIR_EXTRACTOR;
       rows = extractor.extract(stream);
       parser = new DirParser(report);
+      parser.parse(rows);
+    }
+
+    // grades
+    {
+      stream = new FileInputStream(gradesUrl);
+      extractor = Constants.GRADES_EXTRACTOR;
+      rows = extractor.extract(stream);
+      parser = new GradesParser(report);
       parser.parse(rows);
     }
 

@@ -63,6 +63,16 @@ public class CourseBean {
 
   @Override
   public int hashCode() {
-    return Objects.hash(number, name);
+    String subjectCodesStr = subjectCodes.stream().sorted().collect(Collectors.joining());
+    return Objects.hash(number, name, subjectCodesStr);
+  }
+
+  public void addSubjectCodes(Set<String> subjectCodes) {
+    this.subjectCodes.addAll(subjectCodes);
+    uuid = generateUuid();
+  }
+
+  public Set<String> getSubjectCodes() {
+    return subjectCodes;
   }
 }

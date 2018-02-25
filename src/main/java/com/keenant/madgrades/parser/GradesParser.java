@@ -28,9 +28,19 @@ public class GradesParser implements TableParser {
     }
   }
 
-  private void registerCourse(String subjectCode, int courseNum, String name, Map<String, Map<GradeType, Integer>> backlog) {
+  private void registerCourse(String subjectCode, int courseNum, String name,
+      Map<String, Map<GradeType, Integer>> backlog) {
     Map<String, Map<GradeType, Integer>> grades = new HashMap<>(backlog);
-    CourseOffering offering = report.getOrCreateCourse(courseNum, name, grades);
+
+    CourseOffering offering = report.findCourse(subjectCode, courseNum).orElse(null);
+
+    if (offering == null)
+      return;
+
+    offering.setName(name);
+    offering.setGrades(grades);
+
+    // todo: just in case?? idk
     offering.registerSubject(subjectCode);
   }
 

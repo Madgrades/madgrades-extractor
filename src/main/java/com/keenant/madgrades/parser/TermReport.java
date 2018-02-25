@@ -1,25 +1,18 @@
 package com.keenant.madgrades.parser;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
-import java.util.ArrayList;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-/**
- * A directory of courses, rooms, instructors for a particular term.
- */
 public class TermReport {
   private final int termCode;
 
-  /** course num -> course name -> courses */
-  private final Table<Integer, String, List<CourseOffering>> courses = HashBasedTable.create();
+  /** course info -> offerings */
+  private final Multimap<Integer, CourseOffering> courses = ArrayListMultimap.create();
 
   /** employee id -> instructor name */
   private final Map<String, String> instructorNames = new HashMap<>();
@@ -37,48 +30,39 @@ public class TermReport {
   }
 
   public Collection<CourseOffering> getCourses() {
-    return courses.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+    return courses.values();
   }
 
-  public Optional<List<CourseOffering>> getCourses(int courseNum, String name) {
-    return Optional.ofNullable(courses.get(courseNum, name));
+  public Collection<CourseOffering> getCourses(int courseNumber) {
+    return courses.get(courseNumber);
   }
 
-  public Optional<CourseOffering> getCourse(int courseNum, String name, Set<String> sectionNumbers) {
-    List<CourseOffering> courses = getCourses(courseNum, name).orElse(null);
+  private Optional<CourseOffering> getCourse(int courseNum, Set<Section> sections) {
+    CourseOffering tmp = new CourseOffering(termCode, courseNum);
+    for (Section section : sections)
+      tmp.registerSection(section);
 
-    if (courses == null)
-      return Optional.empty();
-
-    return courses.stream()
-        .filter(course -> course.sectionsMatch(sectionNumbers))
+    // todo: should only return one, ever
+    return courses.get(courseNum).stream()
+        .filter(course -> course.sectionsMatch(tmp.getSections()))
         .findFirst();
   }
 
   public Optional<CourseOffering> findCourse(String subjectCode, int courseNum) {
-    return courses.row(courseNum).values().stream()
-        .flatMap(Collection::stream)
+    // todo: should only return one, ever right?
+    // also: speed it up with a Multimap subject -> courses
+    return courses.values().stream()
         .filter(course -> course.hasSubjectCode(subjectCode))
+        .filter(course -> course.getNumber() == courseNum)
         .findFirst();
   }
 
-  public CourseOffering getOrCreateCourse(int courseNum, String name,
-      Map<String, Map<GradeType, Integer>> grades) {
-    // todo: remove this once ready
-    if (name == null)
-      throw new IllegalArgumentException();
-
-    CourseOffering course = getCourse(courseNum, name, grades.keySet()).orElse(null);
+  public CourseOffering getOrCreateCourse(int courseNum, Set<Section> sections) {
+    CourseOffering course = getCourse(courseNum, sections).orElse(null);
 
     if (course == null) {
-      course = new CourseOffering(termCode, courseNum, name, grades);
-
-      List<CourseOffering> existing = getCourses(courseNum, name).orElse(null);
-      if (existing == null) {
-        existing = new ArrayList<>();
-        courses.put(courseNum, name, existing);
-      }
-      existing.add(course);
+      course = new CourseOffering(termCode, courseNum);
+      courses.put(courseNum, course);
     }
 
     return course;

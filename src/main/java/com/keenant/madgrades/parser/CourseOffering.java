@@ -3,6 +3,7 @@ package com.keenant.madgrades.parser;
 import com.keenant.madgrades.data.CourseBean;
 import com.keenant.madgrades.data.CourseOfferingBean;
 import com.keenant.madgrades.data.SubjectMembershipBean;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,28 +17,41 @@ import java.util.stream.Collectors;
 public class CourseOffering {
   private final int termCode;
   private final int number;
-  private final String name;
 
   /** all subjects where this course is cross-listed as for this term */
   private final Set<String> subjectCodes = new HashSet<>();
   private final Set<Section> sections = new HashSet<>();
-  private final Map<String, Map<GradeType, Integer>> grades;
+  private final Map<String, Map<GradeType, Integer>> grades = new HashMap<>();
 
-  public CourseOffering(int termCode, int number, String name,
-      Map<String, Map<GradeType, Integer>> grades) {
+  private String name;
+
+  public CourseOffering(int termCode, int number) {
     this.termCode = termCode;
     this.number = number;
-    this.name = name;
-    this.grades = grades;
   }
 
-  public Set<String> getSectionNumbers() {
-    return grades.keySet();
+  public void setGrades(Map<String, Map<GradeType, Integer>> grades) {
+    this.grades.putAll(grades);
   }
 
-  public boolean sectionsMatch(Set<String> sectionNumbers) {
-    return this.grades.size() == sectionNumbers.size() &&
-        this.grades.keySet().containsAll(sectionNumbers);
+  public boolean sectionsMatch(Set<Section> sections) {
+    boolean res = this.sections.size() == sections.size();
+
+    for (Section a : this.sections) {
+      boolean match = false;
+      for (Section b : sections) {
+        if (a.isSameMeeting(b)) {
+          match = true;
+          break;
+        }
+      }
+      if (!match) {
+        res = false;
+        break;
+      }
+    }
+
+    return res;
   }
 
   public Set<Entry<String, Map<GradeType, Integer>>> getGrades() {
@@ -53,7 +67,7 @@ public class CourseOffering {
   }
 
   public CourseOfferingBean toCourseOfferingBean(UUID courseOfferingUuid) {
-    return new CourseOfferingBean(courseOfferingUuid, termCode, name, grades.keySet());
+    return new CourseOfferingBean(courseOfferingUuid, termCode, name, sections);
   }
 
   public Set<SubjectMembershipBean> toSubjectMembershipBeans(UUID courseUuid) {
@@ -66,21 +80,11 @@ public class CourseOffering {
     subjectCodes.add(subjectCode);
   }
 
-  public Section registerSection(String sectionNum, String sectionType,
-      WeekdaySchedule daySchedule, TimeSchedule timeSchedule, Room room) {
-
-    Section newSection = new Section(
-        number,
-        sectionType,
-        sectionNum,
-        daySchedule,
-        timeSchedule,
-        room
-    );
-
+  public Section registerSection(Section newSection) {
     // check if section already exists, return it
     for (Section section : sections) {
-      if (section.matches(newSection)) {
+      if (section.isSameMeeting(newSection)) {
+        section.registerInstructors(newSection.getInstructors());
         return section;
       }
     }
@@ -104,5 +108,13 @@ public class CourseOffering {
 
   public boolean hasSubjectCode(String subjectCode) {
     return subjectCodes.contains(subjectCode);
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public Set<String> getSubjectCodes() {
+    return subjectCodes;
   }
 }

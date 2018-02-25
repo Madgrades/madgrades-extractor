@@ -2,7 +2,10 @@ package com.keenant.madgrades.parser;
 
 import com.keenant.madgrades.TableParser;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DirParser implements TableParser {
@@ -12,9 +15,27 @@ public class DirParser implements TableParser {
     this.report = report;
   }
 
+  private void registerSections(String subjectCode, int courseNum, Set<Section> backlog) {
+    if (courseNum < 0)
+      return;
+
+    CourseOffering offering = report.getOrCreateCourse(courseNum, backlog);
+
+    // add subject to course
+    offering.registerSubject(subjectCode);
+
+    // add every section
+    for (Section section : backlog)
+      offering.registerSection(section);
+  }
+
   @Override
   public TermReport parse(List<List<String>> rows) throws ParseException {
     String subjectCode = null;
+
+    String backlogSubjectCode = null;
+    int backlogCourseNum = -1;
+    Set<Section> backlog = new HashSet<>();
 
     for (List<String> row : rows) {
       String joined = row.stream().collect(Collectors.joining(""));
@@ -56,23 +77,26 @@ public class DirParser implements TableParser {
       WeekdaySchedule daySchedule = WeekdaySchedule.parse(daysStr);
       TimeSchedule timeSchedule = TimeSchedule.parse(timeStr);
 
-      CourseOffering course = report.findCourse(subjectCode, courseNum).orElse(null);
-
-      // sometimes, we just can't find it :)
-      if (course == null) {
-        continue;
+      if (backlogCourseNum != courseNum) {
+        registerSections(backlogSubjectCode, backlogCourseNum, backlog);
+        backlog.clear();
       }
 
-      Section section = course.registerSection(
-          sectionNum,
+      Section section = new Section(
+          courseNum,
           sectionType,
+          sectionNum,
           daySchedule,
           timeSchedule,
           room
       );
+      section.registerInstructor(instructorId);
+      backlog.add(section);
 
-      section.addInstructor(instructorId);
       report.registerInstructor(instructorId, instructorName);
+
+      backlogCourseNum = courseNum;
+      backlogSubjectCode = subjectCode;
     }
 
     return report;
