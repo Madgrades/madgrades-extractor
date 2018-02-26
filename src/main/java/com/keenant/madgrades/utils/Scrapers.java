@@ -1,6 +1,8 @@
-package com.keenant.madgrades;
+package com.keenant.madgrades.utils;
 
+import com.keenant.madgrades.Constants;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.jsoup.Jsoup;
@@ -8,9 +10,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class Scraper {
+public class Scrapers {
   public static Map<Integer, String> scrapeDirReports() throws IOException {
-    Map<Integer, String> results = new LinkedHashMap<>();
+    Map<Integer, String> results = new HashMap<>();
     Document doc = Jsoup.connect(Constants.DIR_REPORTS_URL).get();
 
     Elements links = doc.select("a");
@@ -29,7 +31,7 @@ public class Scraper {
   }
 
   public static Map<Integer, String> scrapeGradeReports() throws IOException {
-    Map<Integer, String> results = new LinkedHashMap<>();
+    Map<Integer, String> results = new HashMap<>();
     Document doc = Jsoup.connect(Constants.GRADE_REPORTS_URL).get();
 
     Elements links = doc.select("a");
@@ -47,7 +49,7 @@ public class Scraper {
     return results;
   }
 
-  public static int toTermCode(String termName) {
+  private static int toTermCode(String termName) {
     int seasonId = 2;
     if (termName.startsWith("Fall"))
       seasonId = 2;

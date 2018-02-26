@@ -1,14 +1,10 @@
-package com.keenant.madgrades.parser;
+package com.keenant.madgrades.fields;
 
-import com.keenant.madgrades.relational.RoomModel;
 import java.util.Objects;
 
-/**
- *
- */
 public class Room {
-  public static Room ONLINE = new Room("ONLINE", null);
-  public static Room OTHER = new Room("OTHER", null);
+  private static Room ONLINE = new Room("ONLINE", null);
+  private static Room OFF_CAMPUS = new Room("OFF CAMPUS", null);
 
   private final String facilityCode;
   private final String roomCode;
@@ -19,12 +15,12 @@ public class Room {
   }
 
   public static Room parse(String roomStr) {
-    if (roomStr.equals("ONLINE"))
+    if (roomStr.length() == 0)
+      return null;
+    else if (roomStr.equals("ONLINE"))
       return ONLINE;
     else if (roomStr.equals("OFF CAMPUS"))
-      return OTHER;
-    else if (roomStr.equals(""))
-      return OTHER;
+      return OFF_CAMPUS;
 
     String[] split = roomStr.split(" ");
 
@@ -59,9 +55,5 @@ public class Room {
   @Override
   public int hashCode() {
     return Objects.hash(facilityCode, roomCode);
-  }
-
-  public RoomModel toBean() {
-    return new RoomModel(facilityCode, roomCode);
   }
 }
