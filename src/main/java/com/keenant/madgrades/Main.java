@@ -1,6 +1,9 @@
 package com.keenant.madgrades;
 
 import com.google.common.collect.Sets;
+import com.keenant.madgrades.data.Course;
+import com.keenant.madgrades.data.CourseOffering;
+import com.keenant.madgrades.data.CourseOfferingSection;
 import com.keenant.madgrades.data.Reports;
 import com.keenant.madgrades.data.Term;
 import com.keenant.madgrades.dir.DirEntry;
@@ -12,9 +15,12 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.ref.Reference;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,18 +54,24 @@ public class Main {
       return;
     }
 
-    if (termCode < 1170)
-      return;
-
     System.out.println("Extracting term " + termCode);
 
     Term term = reports.getOrCreateTerm(termCode);
 
-    Stream<DirEntry> dirEntries = Pdfs.extractTable(dir, Constants.DIR_COLUMNS)
-        .map(Parsers::dirEntry)
-        .filter(Objects::nonNull);
-    term.addSections(dirEntries);
+    try (Stream<List<String>> dirEntries = Pdfs.extractTable(dir, Constants.DIR_COLUMNS)) {
+      term.addSections(dirEntries.map(Parsers::dirEntry));
+    }
 
-    reports.generateCourses();
+    List<Course> courses = reports.generateCourses();
+
+
+    for (Course course : courses) {
+      for (CourseOffering offering : course.getCourseOfferings()) {
+        System.out.println(offering.generateUuid());
+      }
+      break;
+    }
+
+    System.out.println(courses.size());
   }
 }

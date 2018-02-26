@@ -2,6 +2,8 @@ package com.keenant.madgrades.data;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * A course offered for a particular term. It may be cross listed under any number of
@@ -21,6 +23,18 @@ public class CourseOffering {
       add(subjectCode);
     }};
     this.sections = sections;
+  }
+
+  /**
+   * Generates a unique id. It is based off of the term code, course number, and all
+   * subjects that this course was cross listed under.
+   *
+   * @return the unique id
+   */
+  public UUID generateUuid() {
+    String subjectCodesStr = subjectCodes.stream().sorted().collect(Collectors.joining());
+    String uniqueStr = termCode + "" + courseNumber + subjectCodesStr;
+    return UUID.nameUUIDFromBytes(uniqueStr.getBytes());
   }
 
   @Override

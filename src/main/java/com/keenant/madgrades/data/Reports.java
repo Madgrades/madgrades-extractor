@@ -1,5 +1,6 @@
 package com.keenant.madgrades.data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,19 +18,26 @@ public class Reports {
   }
 
   public List<Course> generateCourses() {
-
-
+    List<Course> result = new ArrayList<>(7500);
 
     for (Term term : terms.values()) {
-      System.out.println(term);
       List<CourseOffering> courseOfferings = term.generateCourseOfferings();
 
-      courseOfferings.stream()
-          .filter(courseOffering -> courseOffering.getCourseNumber() == 252)
-          .map(offering -> "\t" + offering)
-          .forEach(System.out::println);
+      for (CourseOffering offering : courseOfferings) {
+        Course course = result.stream()
+            .filter(c -> c.isCourse(offering))
+            .findFirst()
+            .orElse(null);
+
+        if (course == null) {
+          course = new Course(offering.getCourseNumber());
+          result.add(course);
+        }
+
+        course.addCourseOffering(offering);
+      }
     }
 
-    return null;
+    return result;
   }
 }

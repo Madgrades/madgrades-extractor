@@ -6,8 +6,12 @@ import com.keenant.madgrades.fields.SectionType;
 import com.keenant.madgrades.fields.TimeSchedule;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class CourseOfferingSection {
+
+  private final int termCode;
   private final int courseNumber;
   private final SectionType sectionType;
   private final int sectionNumber;
@@ -16,9 +20,10 @@ public class CourseOfferingSection {
   private final Room room;
   private final Set<Integer> instructors;
 
-  public CourseOfferingSection(int courseNumber,
+  public CourseOfferingSection(int termCode, int courseNumber,
       SectionType sectionType, int sectionNumber, TimeSchedule times,
       DaySchedule days, Room room, Set<Integer> instructors) {
+    this.termCode = termCode;
     this.courseNumber = courseNumber;
     this.sectionType = sectionType;
     this.sectionNumber = sectionNumber;
@@ -26,6 +31,13 @@ public class CourseOfferingSection {
     this.days = days;
     this.room = room;
     this.instructors = instructors;
+  }
+
+  public UUID generateUuid() {
+    // todo: this should be all fields i think
+    String instructorsStr = instructors.stream().sorted().map(s -> "").collect(Collectors.joining());
+    String uniqueStr = termCode + "" + courseNumber + sectionType + sectionNumber + times + days + room + instructorsStr;
+    return UUID.nameUUIDFromBytes(uniqueStr.getBytes());
   }
 
   public boolean isCrossListed(Section other) {

@@ -71,19 +71,9 @@ public class Section {
     instructors.addAll(other.getInstructors());
   }
 
-  public boolean isCrossListed(Section other) {
-    return !subjectCode.equals(other.subjectCode) &&
-        courseNumber == other.courseNumber &&
-        sectionType == other.sectionType &&
-        sectionNumber == other.sectionNumber &&
-        Objects.equals(times, other.times) &&
-        Objects.equals(days, other.days) &&
-        Objects.equals(room, other.room) &&
-        Objects.equals(instructors, other.instructors);
-  }
-
-  public CourseOfferingSection toCourseOfferingSection() {
+  public CourseOfferingSection toCourseOfferingSection(int termCode) {
     return new CourseOfferingSection(
+        termCode,
         courseNumber,
         sectionType,
         sectionNumber,

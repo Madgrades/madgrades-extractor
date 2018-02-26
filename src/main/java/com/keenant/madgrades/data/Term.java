@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 public class Term {
   private final int termCode;
-  private final Multimap<String, Section> sections = ArrayListMultimap.create();
+  private final Multimap<String, Section> sections = ArrayListMultimap.create(10, 1000); // todo
 
   public Term(int termCode) {
     this.termCode = termCode;
@@ -64,7 +64,8 @@ public class Term {
         else {
           // no cross listed match found for this course so we create a new course offering
           Set<CourseOfferingSection> offeringSections = courseSections.stream()
-              .map(Section::toCourseOfferingSection).collect(Collectors.toSet());
+              .map(o -> o.toCourseOfferingSection(termCode))
+              .collect(Collectors.toSet());
           offerings.add(new CourseOffering(termCode, courseNumber, subjectCode, offeringSections));
         }
 
@@ -76,16 +77,6 @@ public class Term {
     }
 
     return result;
-  }
-
-  private Set<String> getSubjectCodes() {
-    return sections.keySet();
-  }
-
-  private Set<Integer> getCourseNumbers(String subjectCode) {
-    return sections.get(subjectCode).stream()
-        .map(Section::getCourseNumber)
-        .collect(Collectors.toSet());
   }
 
   private Collection<Section> getSections(String subjectCode) {
@@ -118,14 +109,17 @@ public class Term {
         .findFirst();
   }
 
-  public void addSection(Section section) {
+  public Section addSection(Section section) {
     Section existing = sections(section.getSubjectCode(), section.getCourseNumber(),
         section.getSectionNumber()).orElse(null);
 
-    if (existing == null)
+    if (existing == null) {
       this.sections.put(section.getSubjectCode(), section);
-    else
-      existing.combine(section);
+      return section;
+    }
+
+    existing.combine(section);
+    return existing;
   }
 
   public void addSections(Stream<DirEntry> dirEntries) {
@@ -137,7 +131,7 @@ public class Term {
       }
       else if (dirEntry instanceof SectionDirEntry) {
         Section section = ((SectionDirEntry) dirEntry).toSection(subjectCode.get());
-        sections.put(subjectCode.get(), section);
+        addSection(section);
       }
     });
   }
