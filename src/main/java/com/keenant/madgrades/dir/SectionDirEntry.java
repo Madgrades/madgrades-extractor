@@ -1,5 +1,6 @@
 package com.keenant.madgrades.dir;
 
+import com.keenant.madgrades.data.Section;
 import com.keenant.madgrades.fields.DaySchedule;
 import com.keenant.madgrades.fields.Room;
 import com.keenant.madgrades.fields.SectionType;
@@ -12,53 +13,34 @@ public class SectionDirEntry implements DirEntry {
   private final int sectionNumber;
   private final TimeSchedule times;
   private final DaySchedule days;
-  private final Room rooms;
+  private final Room room;
   private final Integer instructorId;
   private final String instructorName;
 
   public SectionDirEntry(int courseNumber, SectionType sectionType, int sectionNumber,
-      TimeSchedule times, DaySchedule days, Room rooms, @Nullable Integer instructorId,
+      TimeSchedule times, DaySchedule days, Room room, @Nullable Integer instructorId,
       @Nullable String instructorName) {
     this.courseNumber = courseNumber;
     this.sectionType = sectionType;
     this.sectionNumber = sectionNumber;
     this.times = times;
     this.days = days;
-    this.rooms = rooms;
+    this.room = room;
     this.instructorId = instructorId;
     this.instructorName = instructorName;
   }
 
-  public int getCourseNumber() {
-    return courseNumber;
-  }
-
-  public SectionType getSectionType() {
-    return sectionType;
-  }
-
-  public int getSectionNumber() {
-    return sectionNumber;
-  }
-
-  public TimeSchedule getTimes() {
-    return times;
-  }
-
-  public DaySchedule getDays() {
-    return days;
-  }
-
-  public Room getRooms() {
-    return rooms;
-  }
-
-  public int getInstructorId() {
-    return instructorId;
-  }
-
-  public String getInstructorName() {
-    return instructorName;
+  public Section toSection(String subjectCode) {
+    return new Section(
+        subjectCode,
+        courseNumber,
+        sectionType,
+        sectionNumber,
+        times,
+        days,
+        room,
+        instructorId
+    );
   }
 
   @Override

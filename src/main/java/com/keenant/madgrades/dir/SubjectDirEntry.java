@@ -11,4 +11,8 @@ public class SubjectDirEntry implements DirEntry {
   public String toString() {
     return "SubjectDirEntry(" + subjectCode + ")";
   }
+
+  public String getSubjectCode() {
+    return subjectCode;
+  }
 }

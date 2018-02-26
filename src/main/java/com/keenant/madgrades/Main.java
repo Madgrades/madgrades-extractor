@@ -8,6 +8,7 @@ import com.keenant.madgrades.utils.Pdfs;
 import com.keenant.madgrades.utils.Parsers;
 import com.keenant.madgrades.utils.Scrapers;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.ref.Reference;
 import java.net.URL;
@@ -33,33 +34,32 @@ public class Main {
     for (int termCode : termCodes) {
       String dirUrl = dirReports.get(termCode);
       String gradeUrl = gradeReports.get(termCode);
-      extract(reports, termCode, dirUrl, gradeUrl);
+      if (dirUrl == null || gradeUrl == null)
+        continue;
+      extract(reports, termCode, new URL(dirUrl).openStream(), new URL(gradeUrl).openStream());
     }
+
+//    extract(reports, 1182, new FileInputStream("/home/keenan/Documents/1182-Final-DIR-Report.pdf"), null);
   }
 
-  private static void extract(Reports reports, int termCode, String dirUrl, String gradesUrl) throws Exception {
-    if (dirUrl == null || gradesUrl == null) {
-      System.out.println("Skipping " + termCode);
-      return;
-    }
-
+  private static void extract(Reports reports, int termCode, InputStream dir, InputStream grades) throws Exception {
     if (termCode == 1124) {
       System.out.println("Term code " + termCode + " is unsupported.");
       return;
     }
 
-    if (termCode != 1182)
+    if (termCode < 1170)
       return;
 
     System.out.println("Extracting term " + termCode);
-    InputStream stream = new URL(dirUrl).openStream();
 
     Term term = reports.getOrCreateTerm(termCode);
 
-    Stream<DirEntry> dirEntries = Pdfs.extractTable(stream, Constants.DIR_COLUMNS).map(Parsers::dirEntry);
+    Stream<DirEntry> dirEntries = Pdfs.extractTable(dir, Constants.DIR_COLUMNS)
+        .map(Parsers::dirEntry)
+        .filter(Objects::nonNull);
+    term.addSections(dirEntries);
 
-    dirEntries.forEach(entry -> {
-
-    });
+    reports.generateCourses();
   }
 }

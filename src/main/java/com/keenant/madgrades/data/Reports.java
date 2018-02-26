@@ -1,16 +1,12 @@
 package com.keenant.madgrades.data;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 public class Reports {
   private final Map<Integer, Term> terms = new HashMap<>();
-
-  private Map<UUID, Course> courses;
 
   public Term getOrCreateTerm(int termCode) {
     return terms.computeIfAbsent(termCode, Term::new);
@@ -20,11 +16,20 @@ public class Reports {
     return Optional.ofNullable(terms.get(termCode));
   }
 
-  public void generateCourses() {
-    courses = new HashMap<>();
+  public List<Course> generateCourses() {
+
+
 
     for (Term term : terms.values()) {
+      System.out.println(term);
+      List<CourseOffering> courseOfferings = term.generateCourseOfferings();
 
+      courseOfferings.stream()
+          .filter(courseOffering -> courseOffering.getCourseNumber() == 252)
+          .map(offering -> "\t" + offering)
+          .forEach(System.out::println);
     }
+
+    return null;
   }
 }
