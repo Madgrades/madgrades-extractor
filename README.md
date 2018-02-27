@@ -12,13 +12,17 @@ The conversion process for a single term is as follows:
 1. Open DIR report for the term.
 
     a. Extract table from PDF (using [tabula](https://github.com/tabulapdf/tabula-java))
+    
     b. Read each row, adding new section per row.
+    
     c. Collate section info as necessary (i.e. 2 instructors for 1 single section)
+    
     d. Collate courses which appear to be cross-listed (based on similarity between sections offered) 
     
 2. Open grades report for the term.
 
     a. Extract table from PDF
+    
     b. Read each row, add add each section grade data to course data added by the DIR report process
 
 Typically all terms are extracted so this process repeats for each term.
