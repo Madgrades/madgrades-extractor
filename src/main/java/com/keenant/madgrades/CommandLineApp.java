@@ -5,14 +5,12 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.keenant.madgrades.data.Course;
-import com.keenant.madgrades.data.Reports;
 import com.keenant.madgrades.data.Term;
+import com.keenant.madgrades.data.TermReports;
 import com.keenant.madgrades.tools.Exporters;
-import com.keenant.madgrades.tools.Mappers;
 import com.keenant.madgrades.tools.Parse;
-import com.keenant.madgrades.utils.Pdfs;
 import com.keenant.madgrades.tools.Scrapers;
+import com.keenant.madgrades.utils.Pdfs;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
@@ -91,7 +89,7 @@ public class CommandLineApp {
       }
     }
 
-    Reports reports = new Reports();
+    TermReports reports = new TermReports();
 
     for (int termCode : termCodes) {
       String dirUrl = dirReports.get(termCode);
@@ -108,7 +106,7 @@ public class CommandLineApp {
     System.out.println("Done.");
   }
 
-  private static void extract(Reports reports, int termCode, InputStream dir, InputStream grades) throws Exception {
+  private static void extract(TermReports reports, int termCode, InputStream dir, InputStream grades) throws Exception {
     if (termCode == 1124) {
       System.out.println("Term " + termCode + " is unsupported.");
       return;

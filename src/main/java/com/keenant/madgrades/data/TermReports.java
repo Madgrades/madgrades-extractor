@@ -14,7 +14,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-public class Reports {
+public class TermReports {
   private final Map<Integer, Term> terms = new HashMap<>();
 
   public Term getOrCreateTerm(int termCode) {

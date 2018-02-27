@@ -121,7 +121,7 @@ public class Parse {
       return Stream.empty();
     }
 
-    int gradeCount = Integer.parseInt(row.get(3));
+    double gradeCount = (double) Integer.parseInt(row.get(3));
 
     Map<GradeType, Integer> grades = new LinkedHashMap<>();
 
@@ -130,13 +130,13 @@ public class Parse {
       double percent;
 
       try {
-        percent = Double.parseDouble(row.get(i + 4));
+        percent = Double.parseDouble(row.get(i + 5));
       } catch (NumberFormatException e) {
         grades.put(gradeType, 0);
         continue;
       }
 
-      int count = (int) Math.round((double) gradeCount * (percent / 100.0));
+      int count = (int) Math.round(gradeCount * (percent / 100.0));
       grades.put(gradeType, count);
     }
 
