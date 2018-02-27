@@ -1,10 +1,31 @@
 # madgrades
 
-UW-Madison course and grade distribution data extraction.
+This project reads UW Madison grade distribution and course report PDF files (published by the UW Madison Office
+of the Registrar) and converts them into CSV or SQL dump files.
 
-This project reads UW Madison grade distribution and course report PDF files and converts them into CSV or SQL dump files.
+![https://i.imgur.com/9ZrwRMt.png](https://i.imgur.com/9ZrwRMt.png)
 
-## Usage
+## Conversion
+
+The conversion process for a single term is as follows:
+
+1. Open DIR report for the term.
+
+    a. Extract table from PDF (using [tabula](https://github.com/tabulapdf/tabula-java))
+    b. Read each row, adding new section per row.
+    c. Collate section info as necessary (i.e. 2 instructors for 1 single section)
+    d. Collate courses which appear to be cross-listed (based on similarity between sections offered) 
+    
+2. Open grades report for the term.
+
+    a. Extract table from PDF
+    b. Read each row, add add each section grade data to course data added by the DIR report process
+
+Typically all terms are extracted so this process repeats for each term.
+
+## Command Line Usage
+
+Build it yourself with `mvn clean install` or grab a release from the releases page.
 
 Only SQL dumps are exported via command-line currently.
 
