@@ -1,15 +1,15 @@
 package com.keenant.madgrades.data;
 
-import com.keenant.madgrades.fields.GradeType;
+import com.keenant.madgrades.utils.GradeType;
 import java.util.Map;
 
-public class GradeDistribution {
+public class SectionGrades {
   private final String subjectCode;
   private final int courseNumber;
   private final int sectionNumber;
   private final Map<GradeType, Integer> grades;
 
-  public GradeDistribution(String subjectCode, int courseNumber, int sectionNumber,
+  public SectionGrades(String subjectCode, int courseNumber, int sectionNumber,
       Map<GradeType, Integer> grades) {
     this.subjectCode = subjectCode;
     this.courseNumber = courseNumber;

@@ -1,6 +1,7 @@
-package com.keenant.madgrades.fields;
+package com.keenant.madgrades.utils;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class Room {
   private static Room ONLINE = new Room("ONLINE", null);
@@ -8,10 +9,27 @@ public class Room {
 
   private final String facilityCode;
   private final String roomCode;
+  private final UUID uuid;
 
   public Room(String facilityCode, String roomCode) {
     this.facilityCode = facilityCode;
     this.roomCode = roomCode;
+    uuid = generateUuid();
+  }
+
+  public String getFacilityCode() {
+    return facilityCode;
+  }
+
+  public String getRoomCode() {
+    return roomCode;
+  }
+
+  private UUID generateUuid() {
+    String uniqueStr = facilityCode;
+    if (roomCode != null)
+      uniqueStr += roomCode;
+    return UUID.nameUUIDFromBytes(uniqueStr.getBytes());
   }
 
   public static Room parse(String roomStr) {
@@ -55,5 +73,9 @@ public class Room {
   @Override
   public int hashCode() {
     return Objects.hash(facilityCode, roomCode);
+  }
+
+  public UUID getUuid() {
+    return uuid;
   }
 }

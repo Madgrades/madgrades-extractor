@@ -1,10 +1,15 @@
 package com.keenant.madgrades.data;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Multimap;
-import com.keenant.madgrades.dir.DirEntry;
-import com.keenant.madgrades.dir.SectionDirEntry;
-import com.keenant.madgrades.dir.SubjectDirEntry;
+import com.google.common.collect.Table;
+import com.keenant.madgrades.entries.CourseNameEntry;
+import com.keenant.madgrades.entries.DirEntry;
+import com.keenant.madgrades.entries.GradesEntry;
+import com.keenant.madgrades.entries.SectionEntry;
+import com.keenant.madgrades.entries.SectionGradesEntry;
+import com.keenant.madgrades.entries.SubjectEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -17,17 +22,19 @@ import java.util.stream.Stream;
 
 public class Term {
   private final int termCode;
-  private final Multimap<String, Section> sections = ArrayListMultimap.create(10, 1000); // todo
+
+  /** subject code -> list of sections */
+  private final Multimap<String, DirSection> sections = ArrayListMultimap
+      .create(10, 1000);
+
+  /** course number -> list of grades */
+  private final Multimap<Integer, SectionGrades> grades = ArrayListMultimap.create();
+
+  /** subject code -> course number -> course name */
+  private final Table<String, Integer, String> courseNames = HashBasedTable.create();
 
   public Term(int termCode) {
     this.termCode = termCode;
-  }
-
-  @Override
-  public String toString() {
-    return "Term{" +
-        "termCode=" + termCode +
-        '}';
   }
 
   public List<CourseOffering> generateCourseOfferings() {
@@ -35,18 +42,19 @@ public class Term {
 
     Set<Integer> courseNumbers = courseNumbers().collect(Collectors.toSet());
 
-    Set<Section> ignore = new HashSet<>();
+    Set<DirSection> ignore = new HashSet<>();
 
     for (int courseNumber : courseNumbers) {
-      Multimap<String, Section> sections = sections(courseNumber);
+      Multimap<String, DirSection> sections = getSections(courseNumber);
 
       // list of course offerings for this course number
       // i.e. [CS 252/ECE 252, DS 252]
       List<CourseOffering> offerings = new ArrayList<>();
 
       for (String subjectCode : sections.keys()) {
-        Set<Section> courseSections = sections(subjectCode, courseNumber).collect(Collectors.toSet());
+        Set<DirSection> courseSections = sections(subjectCode, courseNumber).collect(Collectors.toSet());
 
+        // ignore already added course sections
         if (ignore.containsAll(courseSections))
           continue;
 
@@ -63,10 +71,13 @@ public class Term {
         }
         else {
           // no cross listed match found for this course so we create a new course offering
-          Set<CourseOfferingSection> offeringSections = courseSections.stream()
-              .map(o -> o.toCourseOfferingSection(termCode))
+          Set<Section> offeringSections = courseSections.stream()
+              .map(o -> o.toSection(termCode))
               .collect(Collectors.toSet());
-          offerings.add(new CourseOffering(termCode, courseNumber, subjectCode, offeringSections));
+
+          String name = courseNames.get(subjectCode, courseNumber);
+
+          offerings.add(new CourseOffering(termCode, courseNumber, subjectCode, name, offeringSections));
         }
 
         // ignore these sections, as they have been registered in a course offering
@@ -79,59 +90,101 @@ public class Term {
     return result;
   }
 
-  private Collection<Section> getSections(String subjectCode) {
+  private Collection<DirSection> getSections(String subjectCode) {
     return sections.get(subjectCode);
   }
 
   private Stream<Integer> courseNumbers() {
     return sections.values()
         .stream()
-        .map(Section::getCourseNumber)
+        .map(DirSection::getCourseNumber)
         .distinct();
   }
 
-  private Stream<Section> sections(String subjectCode, int courseNumber) {
+  private Stream<DirSection> sections(String subjectCode, int courseNumber) {
     return getSections(subjectCode).stream()
         .filter(section -> section.getCourseNumber() == courseNumber);
   }
 
-  private Multimap<String, Section> sections(int courseNumber) {
-    Multimap<String, Section> result = ArrayListMultimap.create();
+  /**
+   * Get sections for a particular course number, organized by subject code -> sections.
+   * @param courseNumber the course number to find
+   * @return map of subject code -> list of sections
+   */
+  private Multimap<String, DirSection> getSections(int courseNumber) {
+    Multimap<String, DirSection> result = ArrayListMultimap.create();
     sections.values().stream()
         .filter(section -> section.getCourseNumber() == courseNumber)
         .forEach(section -> result.put(section.getSubjectCode(), section));
     return result;
   }
 
-  private Optional<Section> sections(String subjectCode, int courseNumber, int sectionNumber) {
-    return sections(subjectCode, courseNumber)
-        .filter(section -> section.getSectionNumber() == sectionNumber)
-        .findFirst();
-  }
-
-  public Section addSection(Section section) {
-    Section existing = sections(section.getSubjectCode(), section.getCourseNumber(),
-        section.getSectionNumber()).orElse(null);
+  /**
+   * Add this section to this term, or merge it with a matching section.
+   * @param section the sectino to add
+   */
+  public void registerSection(DirSection section) {
+    DirSection existing = sections(section.getSubjectCode(), section.getCourseNumber())
+        .filter(other -> other.matches(section))
+        .findFirst()
+        .orElse(null);
 
     if (existing == null) {
       this.sections.put(section.getSubjectCode(), section);
-      return section;
+      return;
     }
 
-    existing.combine(section);
-    return existing;
+    existing.combineInstructors(section);
   }
 
   public void addSections(Stream<DirEntry> dirEntries) {
+    // track subject code as it is streamed in
     AtomicReference<String> subjectCode = new AtomicReference<>();
 
     dirEntries.forEach(dirEntry ->  {
-      if (dirEntry instanceof SubjectDirEntry) {
-        subjectCode.set(((SubjectDirEntry) dirEntry).getSubjectCode());
+      if (dirEntry instanceof SubjectEntry) {
+        subjectCode.set(((SubjectEntry) dirEntry).getSubjectCode());
       }
-      else if (dirEntry instanceof SectionDirEntry) {
-        Section section = ((SectionDirEntry) dirEntry).toSection(subjectCode.get());
-        addSection(section);
+      else if (dirEntry instanceof SectionEntry) {
+        DirSection section = ((SectionEntry) dirEntry).toDirSection(subjectCode.get());
+        registerSection(section);
+      }
+    });
+  }
+
+  public void addGrades(Stream<GradesEntry> gradesEntries) {
+    // track subject code
+    AtomicReference<String> subjectCode = new AtomicReference<>();
+
+    // track sections stream in
+    // once we hit a course name we should process this list
+    List<SectionGradesEntry> backlog = new ArrayList<>();
+
+    gradesEntries.forEach(gradesEntry -> {
+      if (gradesEntry instanceof SubjectEntry) {
+        subjectCode.set(((SubjectEntry) gradesEntry).getSubjectCode());
+      }
+      else if (gradesEntry instanceof SectionGradesEntry) {
+        backlog.add((SectionGradesEntry) gradesEntry);
+      }
+      else if (gradesEntry instanceof CourseNameEntry) {
+        String courseName = ((CourseNameEntry) gradesEntry).getCourseName();
+        int courseNumber = -1;
+
+        for (SectionGradesEntry entry : backlog) {
+          courseNumber = entry.getCourseNumber();
+
+          grades.put(entry.getCourseNumber(), new SectionGrades(
+              subjectCode.get(),
+              courseNumber,
+              entry.getSectionNumber(),
+              entry.getGradeDistribution()
+          ));
+        }
+
+        courseNames.put(subjectCode.get(), courseNumber, courseName);
+
+        backlog.clear();
       }
     });
   }

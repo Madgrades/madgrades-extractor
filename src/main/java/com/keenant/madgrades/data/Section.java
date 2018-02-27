@@ -1,42 +1,56 @@
 package com.keenant.madgrades.data;
 
-import com.keenant.madgrades.fields.DaySchedule;
-import com.keenant.madgrades.fields.Room;
-import com.keenant.madgrades.fields.SectionType;
-import com.keenant.madgrades.fields.TimeSchedule;
-import java.util.HashSet;
+import com.keenant.madgrades.utils.Room;
+import com.keenant.madgrades.utils.SectionType;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import javax.annotation.Nullable;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Section {
-  private final String subjectCode;
+  private final int termCode;
   private final int courseNumber;
   private final SectionType sectionType;
   private final int sectionNumber;
-  private final TimeSchedule times;
-  private final DaySchedule days;
+  private final Schedule schedule;
   private final Room room;
-  private final Set<Integer> instructors;
+  private final Map<Integer, String> instructors;
 
-  public Section(String subjectCode, int courseNumber,
-      SectionType sectionType, int sectionNumber, TimeSchedule times,
-      DaySchedule days, Room room, @Nullable Integer instructorId) {
-    this.subjectCode = subjectCode;
+  public Section(int termCode, int courseNumber,
+      SectionType sectionType, int sectionNumber, Schedule schedule,
+      Room room, Map<Integer, String> instructors) {
+    this.termCode = termCode;
     this.courseNumber = courseNumber;
     this.sectionType = sectionType;
     this.sectionNumber = sectionNumber;
-    this.times = times;
-    this.days = days;
+    this.schedule = schedule;
     this.room = room;
-    this.instructors = new HashSet<>();
-
-    if (instructorId != null)
-      instructors.add(instructorId);
+    this.instructors = instructors;
   }
 
-  public String getSubjectCode() {
-    return subjectCode;
+  public UUID generateUuid(CourseOffering offering) {
+    String instructorsStr = instructors.keySet().stream()
+        .sorted()
+        .map(Object::toString)
+        .collect(Collectors.joining());
+
+    // section is weird because we rely on the parent UUID to generate its section UUID
+    String uniqueStr = offering.generateUuid().toString() + sectionType + sectionNumber + schedule + room + instructorsStr;
+    return UUID.nameUUIDFromBytes(uniqueStr.getBytes());
+  }
+
+  public boolean isCrossListed(DirSection other) {
+    return courseNumber == other.getCourseNumber() &&
+        sectionType == other.getSectionType() &&
+        sectionNumber == other.getSectionNumber() &&
+        Objects.equals(schedule, other.getSchedule()) &&
+        Objects.equals(room, other.getRoom()) &&
+        instructors.equals(other.getInstructors());
+  }
+
+  public int getTermCode() {
+    return termCode;
   }
 
   public int getCourseNumber() {
@@ -51,36 +65,15 @@ public class Section {
     return sectionNumber;
   }
 
-  public TimeSchedule getTimes() {
-    return times;
+  public Schedule getSchedule() {
+    return schedule;
   }
 
-  public DaySchedule getDays() {
-    return days;
+  public Optional<Room> getRoom() {
+    return Optional.ofNullable(room);
   }
 
-  public Room getRoom() {
-    return room;
-  }
-
-  public Set<Integer> getInstructors() {
+  public Map<Integer, String> getInstructors() {
     return instructors;
-  }
-
-  public void combine(Section other) {
-    instructors.addAll(other.getInstructors());
-  }
-
-  public CourseOfferingSection toCourseOfferingSection(int termCode) {
-    return new CourseOfferingSection(
-        termCode,
-        courseNumber,
-        sectionType,
-        sectionNumber,
-        times,
-        days,
-        room,
-        instructors
-    );
   }
 }

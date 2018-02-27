@@ -1,6 +1,7 @@
 package com.keenant.madgrades.data;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -14,15 +15,28 @@ public class CourseOffering {
   private final int termCode;
   private final int courseNumber;
   private final Set<String> subjectCodes;
-  private final Set<CourseOfferingSection> sections;
+  private final String name;
+  private final Set<Section> sections;
 
-  public CourseOffering(int termCode, int courseNumber, String subjectCode, Set<CourseOfferingSection> sections) {
+  public CourseOffering(int termCode, int courseNumber, String subjectCode, String name, Set<Section> sections) {
     this.termCode = termCode;
     this.courseNumber = courseNumber;
     this.subjectCodes = new HashSet<String>() {{
       add(subjectCode);
     }};
+    this.name = name;
     this.sections = sections;
+  }
+
+  @Override
+  public String toString() {
+    return "CourseOffering{" +
+        "termCode=" + termCode +
+        ", courseNumber=" + courseNumber +
+        ", subjectCodes=" + subjectCodes +
+        ", name='" + name + '\'' +
+        ", sections=" + sections.size() +
+        '}';
   }
 
   /**
@@ -37,16 +51,6 @@ public class CourseOffering {
     return UUID.nameUUIDFromBytes(uniqueStr.getBytes());
   }
 
-  @Override
-  public String toString() {
-    return "CourseOffering{" +
-        "termCode=" + termCode +
-        ", courseNumber=" + courseNumber +
-        ", subjectCodes=" + subjectCodes +
-        ", sections=" + sections +
-        '}';
-  }
-
   public int getTermCode() {
     return termCode;
   }
@@ -59,27 +63,33 @@ public class CourseOffering {
     return subjectCodes;
   }
 
-  public Set<CourseOfferingSection> getSections() {
+  public Set<Section> getSections() {
     return sections;
   }
 
-  public boolean isCrossListed(Set<Section> sections) {
-    for (CourseOfferingSection section : this.sections) {
+  public boolean isCrossListed(Set<DirSection> sections) {
+    for (Section section : this.sections) {
       boolean matchFound = false;
-      for (Section other : sections) {
+      for (DirSection other : sections) {
         if (section.isCrossListed(other)) {
           matchFound = true;
           break;
         }
       }
 
-      if (!matchFound)
+      if (!matchFound) {
         return false;
+      }
     }
+
     return true;
   }
 
   public void addSubjectCode(String subjectCode) {
     subjectCodes.add(subjectCode);
+  }
+
+  public Optional<String> getName() {
+    return Optional.ofNullable(name);
   }
 }

@@ -1,4 +1,4 @@
-package com.keenant.madgrades.fields;
+package com.keenant.madgrades.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

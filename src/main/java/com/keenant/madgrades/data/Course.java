@@ -1,6 +1,7 @@
 package com.keenant.madgrades.data;
 
 import com.google.common.collect.Sets;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -30,8 +31,9 @@ public class Course {
    * @return the unique id.
    */
   public UUID generateUuid() {
+    // get first course offering
     CourseOffering firstOffering = courseOfferings.stream()
-        .sorted((a, b) -> a.getTermCode() - b.getTermCode())
+        .sorted(Comparator.comparingInt(CourseOffering::getTermCode))
         .findFirst().orElse(null);
 
     int hash = Objects.hash(courseNumber, firstOffering.generateUuid());

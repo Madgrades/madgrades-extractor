@@ -1,4 +1,4 @@
-package com.keenant.madgrades.utils;
+package com.keenant.madgrades.tools;
 
 import com.keenant.madgrades.Constants;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package com.keenant.madgrades.fields;
+package com.keenant.madgrades.utils;
 
 import com.keenant.madgrades.Constants;
 import java.time.DayOfWeek;
@@ -38,12 +38,6 @@ public class DaySchedule {
     return days.contains(day);
   }
 
-  public String serialize() {
-    return days.stream()
-        .map(Constants.DAY_TO_STR::get)
-        .collect(Collectors.joining(""));
-  }
-
   @Override
   public String toString() {
     if (days.isEmpty())
@@ -58,8 +52,7 @@ public class DaySchedule {
   public boolean equals(Object o) {
     if (o instanceof DaySchedule) {
       DaySchedule other = (DaySchedule) o;
-      return other.days.size() == days.size() &&
-          other.days.containsAll(days);
+      return days.equals(other.days);
     }
     return false;
   }
