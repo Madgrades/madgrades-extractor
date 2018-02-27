@@ -10,10 +10,12 @@ import com.keenant.madgrades.entries.GradesEntry;
 import com.keenant.madgrades.entries.SectionEntry;
 import com.keenant.madgrades.entries.SectionGradesEntry;
 import com.keenant.madgrades.entries.SubjectEntry;
+import com.keenant.madgrades.utils.GradeType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -64,10 +66,15 @@ public class Term {
             .filter(other -> other.isCrossListed(courseSections))
             .findFirst();
 
+        List<SectionGrades> sectionGrades = grades.get(courseNumber).stream()
+            .filter(s -> s.getSubjectCode().equals(subjectCode))
+            .collect(Collectors.toList());
+
         if (crossListed.isPresent()) {
           // an exact match has been found, the sections are identical so simply add the
           // subject code to the cross listed course offering
           crossListed.get().addSubjectCode(subjectCode);
+          crossListed.get().addGrades(sectionGrades);
         }
         else {
           // no cross listed match found for this course so we create a new course offering
@@ -77,7 +84,10 @@ public class Term {
 
           String name = courseNames.get(subjectCode, courseNumber);
 
-          offerings.add(new CourseOffering(termCode, courseNumber, subjectCode, name, offeringSections));
+          CourseOffering offering = new CourseOffering(termCode, courseNumber, subjectCode, name, offeringSections);
+          offerings.add(offering);
+
+          offering.addGrades(sectionGrades);
         }
 
         // ignore these sections, as they have been registered in a course offering

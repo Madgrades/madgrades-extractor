@@ -3,16 +3,20 @@ package com.keenant.madgrades.tools;
 import com.google.common.collect.ImmutableMap;
 import com.keenant.madgrades.data.Course;
 import com.keenant.madgrades.data.CourseOffering;
+import com.keenant.madgrades.data.GradeDistribution;
 import com.keenant.madgrades.data.Instructor;
 import com.keenant.madgrades.data.Schedule;
 import com.keenant.madgrades.data.Section;
 import com.keenant.madgrades.data.Teaching;
+import com.keenant.madgrades.utils.GradeType;
 import com.keenant.madgrades.utils.NoArgObjectMapper;
 import com.keenant.madgrades.utils.ObjectMapper;
 import com.keenant.madgrades.utils.Room;
 import java.time.DayOfWeek;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 public class Mappers {
@@ -29,10 +33,11 @@ public class Mappers {
         put("name", offering.getName().orElse(null));
       }};
 
-  public static final NoArgObjectMapper<Instructor> INSTRUCTOR = (instructor) -> ImmutableMap.of(
-      "id", instructor.getId(),
-      "name", instructor.getName()
-  );
+  public static final NoArgObjectMapper<Instructor> INSTRUCTOR = (instructor) ->
+      new LinkedHashMap<String, Object>() {{
+        put("id", instructor.getId());
+        put("name", instructor.getName());
+      }};
 
   public static final ObjectMapper<Section, CourseOffering> SECTION = (section, offering) ->
       new LinkedHashMap<String, Object>() {{
@@ -74,4 +79,13 @@ public class Mappers {
       "subject_code", subjectCode,
       "course_offering_uuid", offering.generateUuid().toString()
   );
+
+  public static final ObjectMapper<GradeDistribution, CourseOffering> GRADE_DISTRIBUTION = (grades, offering) ->
+      new LinkedHashMap<String, Object>() {{
+          put("course_offering_uuid", offering.generateUuid().toString());
+          put("section_number", grades.getSectionNumber());
+          for (Entry<GradeType, Integer> entry : grades.getGrades().entrySet()) {
+            put(entry.getKey().name().toLowerCase() + "_count", entry.getValue());
+          }
+      }};
 }

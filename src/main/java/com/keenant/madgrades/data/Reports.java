@@ -3,6 +3,7 @@ package com.keenant.madgrades.data;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.keenant.madgrades.tools.Mappers;
+import com.keenant.madgrades.utils.GradeType;
 import com.keenant.madgrades.utils.Room;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +38,11 @@ public class Reports {
 
         for (String subjectCode : offering.getSubjectCodes()) {
           tables.put("subject_memberships", Mappers.SUBJECT_MEMBERSHIP.map(subjectCode, offering));
+        }
+
+        for (Entry<Integer, Map<GradeType, Integer>> grades : offering.getGrades().entrySet()) {
+          GradeDistribution dist = new GradeDistribution(grades.getKey(), grades.getValue());
+          tables.put("grade_distributions", Mappers.GRADE_DISTRIBUTION.map(dist, offering));
         }
 
         for (Section section : offering.getSections()) {

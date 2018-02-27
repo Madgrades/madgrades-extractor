@@ -1,6 +1,11 @@
 package com.keenant.madgrades.data;
 
+import com.keenant.madgrades.utils.GradeType;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -18,6 +23,8 @@ public class CourseOffering {
   private final String name;
   private final Set<Section> sections;
 
+  private final Map<Integer, Map<GradeType, Integer>> grades = new HashMap<>();
+
   public CourseOffering(int termCode, int courseNumber, String subjectCode, String name, Set<Section> sections) {
     this.termCode = termCode;
     this.courseNumber = courseNumber;
@@ -26,17 +33,6 @@ public class CourseOffering {
     }};
     this.name = name;
     this.sections = sections;
-  }
-
-  @Override
-  public String toString() {
-    return "CourseOffering{" +
-        "termCode=" + termCode +
-        ", courseNumber=" + courseNumber +
-        ", subjectCodes=" + subjectCodes +
-        ", name='" + name + '\'' +
-        ", sections=" + sections.size() +
-        '}';
   }
 
   /**
@@ -67,6 +63,14 @@ public class CourseOffering {
     return sections;
   }
 
+  public Optional<String> getName() {
+    return Optional.ofNullable(name);
+  }
+
+  public Map<Integer, Map<GradeType, Integer>> getGrades() {
+    return grades;
+  }
+
   public boolean isCrossListed(Set<DirSection> sections) {
     for (Section section : this.sections) {
       boolean matchFound = false;
@@ -89,7 +93,17 @@ public class CourseOffering {
     subjectCodes.add(subjectCode);
   }
 
-  public Optional<String> getName() {
-    return Optional.ofNullable(name);
+  private void addGrades(int sectionNumber, Map<GradeType, Integer> distribution) {
+    Map<GradeType, Integer> combine = grades.getOrDefault(sectionNumber, new HashMap<>());
+    for (Entry<GradeType, Integer> entry : distribution.entrySet()) {
+      combine.put(entry.getKey(), entry.getValue() + combine.getOrDefault(entry.getKey(), 0));
+    }
+    grades.put(sectionNumber, combine);
+  }
+
+  public void addGrades(List<SectionGrades> sectionGradesList) {
+    for (SectionGrades sectionGrades : sectionGradesList) {
+      addGrades(sectionGrades.getSectionNumber(), sectionGrades.getGrades());
+    }
   }
 }
