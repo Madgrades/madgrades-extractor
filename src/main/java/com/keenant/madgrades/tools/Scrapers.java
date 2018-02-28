@@ -1,15 +1,37 @@
 package com.keenant.madgrades.tools;
 
 import com.keenant.madgrades.Constants;
+import com.keenant.madgrades.data.Subject;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class Scrapers {
+  public static Set<Subject> scrapeSubjects() throws IOException {
+    Set<Subject> subjects = new HashSet<>();
+    Document doc = Jsoup.connect(Constants.SUBJECTS_URL).get();
+
+    Element tbody = doc.selectFirst("table").selectFirst("tbody");
+
+    for (Element tr : tbody.select("tr")) {
+      Elements children = tr.children();
+
+      String name = children.get(0).text();
+      String abbreviation = children.get(1).text();
+      String code = children.get(2).text();
+
+      subjects.add(new Subject(name, abbreviation, code));
+    }
+
+    return subjects;
+  }
+
   public static Map<Integer, String> scrapeDirReports() throws IOException {
     Map<Integer, String> results = new HashMap<>();
     Document doc = Jsoup.connect(Constants.DIR_REPORTS_URL).get();

@@ -7,6 +7,7 @@ import com.keenant.madgrades.data.GradeDistribution;
 import com.keenant.madgrades.data.Instructor;
 import com.keenant.madgrades.data.Schedule;
 import com.keenant.madgrades.data.Section;
+import com.keenant.madgrades.data.Subject;
 import com.keenant.madgrades.data.Teaching;
 import com.keenant.madgrades.utils.GradeType;
 import com.keenant.madgrades.utils.NoArgObjectMapper;
@@ -86,4 +87,10 @@ public class Mappers {
             put(entry.getKey().name().toLowerCase() + "_count", entry.getValue());
           }
       }};
+
+  public static final NoArgObjectMapper<Subject> SUBJECT = (subject) -> ImmutableMap.of(
+      "code", subject.getCode(),
+      "name", subject.getName(),
+      "abbreviation", subject.getAbbreviation()
+  );
 }

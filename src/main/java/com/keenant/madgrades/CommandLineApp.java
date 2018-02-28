@@ -5,6 +5,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.keenant.madgrades.data.Subject;
 import com.keenant.madgrades.data.Term;
 import com.keenant.madgrades.data.TermReports;
 import com.keenant.madgrades.tools.Exporters;
@@ -17,6 +18,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,7 +50,8 @@ public class CommandLineApp {
       return;
     }
 
-    System.out.println("Scraping for report URLs...");
+    System.out.println("Scraping for subjects and report URLs...");
+    Set<Subject> subjects = Scrapers.scrapeSubjects();
     Map<Integer, String> dirReports = Scrapers.scrapeDirReports();
     Map<Integer, String> gradeReports = Scrapers.scrapeGradeReports();
 
@@ -99,7 +102,7 @@ public class CommandLineApp {
       extract(reports, termCode, new URL(dirUrl).openStream(), new URL(gradeUrl).openStream());
     }
 
-    Multimap<String, Map<String, Object>> tables = reports.generateTables();
+    Multimap<String, Map<String, Object>> tables = reports.generateTables(subjects);
 
     System.out.println("Exporting to '" + outDirectory.getAbsolutePath() + "'");
     Exporters.SQL.export(outDirectory, tables, true);

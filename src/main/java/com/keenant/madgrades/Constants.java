@@ -38,4 +38,7 @@ public class Constants {
 
   /** page which hosts links to dir reports */
   public static final String DIR_REPORTS_URL = "https://registrar.wisc.edu/current-reports/";
+
+  /** page which contains a table of subject areas */
+  public static final String SUBJECTS_URL = "https://registrar.wisc.edu/subjectarea/";
 }

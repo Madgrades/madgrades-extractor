@@ -3,6 +3,7 @@ package com.keenant.madgrades.data;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.keenant.madgrades.tools.Mappers;
+import com.keenant.madgrades.tools.Scrapers;
 import com.keenant.madgrades.utils.GradeType;
 import com.keenant.madgrades.utils.Room;
 import java.util.ArrayList;
@@ -21,8 +22,12 @@ public class TermReports {
     return terms.computeIfAbsent(termCode, Term::new);
   }
 
-  public Multimap<String, Map<String, Object>> generateTables() {
+  public Multimap<String, Map<String, Object>> generateTables(Set<Subject> subjects) {
     Multimap<String, Map<String, Object>> tables = ArrayListMultimap.create();
+
+    for (Subject subject : subjects) {
+      tables.put("subjects", Mappers.SUBJECT.map(subject));
+    }
 
     List<Course> courses = generateCourses();
 
