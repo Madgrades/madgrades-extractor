@@ -3,17 +3,22 @@ package com.keenant.madgrades.data;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import com.keenant.madgrades.entries.CourseNameEntry;
 import com.keenant.madgrades.entries.DirEntry;
 import com.keenant.madgrades.entries.GradesEntry;
 import com.keenant.madgrades.entries.SectionEntry;
 import com.keenant.madgrades.entries.SectionGradesEntry;
-import com.keenant.madgrades.entries.SubjectEntry;
+import com.keenant.madgrades.entries.SubjectAbbrevEntry;
+import com.keenant.madgrades.entries.SubjectCodeEntry;
+import com.keenant.madgrades.entries.SubjectNameEntry;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -33,12 +38,23 @@ public class Term {
   /** subject code -> course number -> course name */
   private final Table<String, Integer, String> courseNames = HashBasedTable.create();
 
+  private final Map<String, String> subjectNames = new HashMap<>();
+  private final Map<String, String> subjectAbbrevs = new HashMap<>();
+
   public Term(int termCode) {
     this.termCode = termCode;
   }
 
   public List<CourseOffering> generateCourseOfferings() {
     List<CourseOffering> result = new ArrayList<>();
+
+    Map<String, Subject> subjects = new HashMap<>();
+    Set<String> subjectCodes = Sets.union(subjectNames.keySet(), subjectAbbrevs.keySet());
+    for (String subjectCode : subjectCodes) {
+      String name = subjectNames.get(subjectCode);
+      String abbrev = subjectAbbrevs.get(subjectCode);
+      subjects.put(subjectCode, new Subject(name, abbrev, subjectCode));
+    }
 
     Set<Integer> courseNumbers = courseNumbers().collect(Collectors.toSet());
 
@@ -68,10 +84,12 @@ public class Term {
             .filter(s -> s.getSubjectCode().equals(subjectCode))
             .collect(Collectors.toList());
 
+        Subject subject = subjects.get(subjectCode);
+
         if (crossListed.isPresent()) {
           // an exact match has been found, the sections are identical so simply add the
           // subject code to the cross listed course offering
-          crossListed.get().addSubjectCode(subjectCode);
+          crossListed.get().addSubject(subject);
           crossListed.get().addGrades(sectionGrades);
         }
         else {
@@ -82,7 +100,7 @@ public class Term {
 
           String name = courseNames.get(subjectCode, courseNumber);
 
-          CourseOffering offering = new CourseOffering(termCode, courseNumber, subjectCode, name, offeringSections);
+          CourseOffering offering = new CourseOffering(termCode, courseNumber, subject, name, offeringSections);
           offerings.add(offering);
 
           offering.addGrades(sectionGrades);
@@ -150,8 +168,12 @@ public class Term {
     AtomicReference<String> subjectCode = new AtomicReference<>();
 
     dirEntries.forEach(dirEntry ->  {
-      if (dirEntry instanceof SubjectEntry) {
-        subjectCode.set(((SubjectEntry) dirEntry).getSubjectCode());
+      if (dirEntry instanceof SubjectCodeEntry) {
+        subjectCode.set(((SubjectCodeEntry) dirEntry).getSubjectCode());
+      }
+      else if (dirEntry instanceof SubjectNameEntry) {
+        String subjectName = ((SubjectNameEntry) dirEntry).getSubjectName();
+        subjectNames.put(subjectCode.get(), subjectName);
       }
       else if (dirEntry instanceof SectionEntry) {
         DirSection section = ((SectionEntry) dirEntry).toDirSection(subjectCode.get());
@@ -161,7 +183,7 @@ public class Term {
   }
 
   public void addGrades(Stream<GradesEntry> gradesEntries) {
-    // track subject code
+    // track subject
     AtomicReference<String> subjectCode = new AtomicReference<>();
 
     // track sections stream in
@@ -169,8 +191,12 @@ public class Term {
     List<SectionGradesEntry> backlog = new ArrayList<>();
 
     gradesEntries.forEach(gradesEntry -> {
-      if (gradesEntry instanceof SubjectEntry) {
-        subjectCode.set(((SubjectEntry) gradesEntry).getSubjectCode());
+      if (gradesEntry instanceof SubjectCodeEntry) {
+        subjectCode.set(((SubjectCodeEntry) gradesEntry).getSubjectCode());
+      }
+      else if (gradesEntry instanceof SubjectAbbrevEntry) {
+        String abbrev = ((SubjectAbbrevEntry) gradesEntry).getSubjectAbbrev();
+        subjectAbbrevs.put(subjectCode.get(), abbrev);
       }
       else if (gradesEntry instanceof SectionGradesEntry) {
         backlog.add((SectionGradesEntry) gradesEntry);

@@ -13,23 +13,23 @@ import java.util.stream.Collectors;
 
 /**
  * A course offered for a particular term. It may be cross listed under any number of
- * subjects (indicated by {@link this#subjectCodes}) assuming each subject it is cross listed
+ * subjects (indicated by {@link this#subjects}) assuming each subject it is cross listed
  * under has the same sections offered.
  */
 public class CourseOffering {
   private final int termCode;
   private final int courseNumber;
-  private final Set<String> subjectCodes;
+  private final Set<Subject> subjects;
   private final String name;
   private final Set<Section> sections;
 
   private final Map<Integer, Map<GradeType, Integer>> grades = new HashMap<>();
 
-  public CourseOffering(int termCode, int courseNumber, String subjectCode, String name, Set<Section> sections) {
+  public CourseOffering(int termCode, int courseNumber, Subject subject, String name, Set<Section> sections) {
     this.termCode = termCode;
     this.courseNumber = courseNumber;
-    this.subjectCodes = new HashSet<String>() {{
-      add(subjectCode);
+    this.subjects = new HashSet<Subject>() {{
+      add(subject);
     }};
     this.name = name;
     this.sections = sections;
@@ -42,7 +42,10 @@ public class CourseOffering {
    * @return the unique id
    */
   public UUID generateUuid() {
-    String subjectCodesStr = subjectCodes.stream().sorted().collect(Collectors.joining());
+    String subjectCodesStr = subjects.stream()
+        .map(Subject::getCode)
+        .sorted()
+        .collect(Collectors.joining());
     String uniqueStr = termCode + "" + courseNumber + subjectCodesStr;
     return UUID.nameUUIDFromBytes(uniqueStr.getBytes());
   }
@@ -55,8 +58,8 @@ public class CourseOffering {
     return courseNumber;
   }
 
-  public Set<String> getSubjectCodes() {
-    return subjectCodes;
+  public Set<Subject> getSubjects() {
+    return subjects;
   }
 
   public Set<Section> getSections() {
@@ -89,8 +92,8 @@ public class CourseOffering {
     return true;
   }
 
-  public void addSubjectCode(String subjectCode) {
-    subjectCodes.add(subjectCode);
+  public void addSubject(Subject subject) {
+    subjects.add(subject);
   }
 
   private void addGrades(int sectionNumber, Map<GradeType, Integer> distribution) {

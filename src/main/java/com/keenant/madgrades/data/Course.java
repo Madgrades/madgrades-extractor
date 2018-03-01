@@ -42,12 +42,12 @@ public class Course {
 
   public boolean isCourse(CourseOffering offering) {
     return courseNumber == offering.getCourseNumber() &&
-        !Sets.intersection(getSubjectCodes(), offering.getSubjectCodes()).isEmpty();
+        !Sets.intersection(getSubjects(), offering.getSubjects()).isEmpty();
   }
 
-  public Set<String> getSubjectCodes() {
+  public Set<Subject> getSubjects() {
     return courseOfferings.stream()
-        .flatMap(o -> o.getSubjectCodes().stream())
+        .flatMap(o -> o.getSubjects().stream())
         .collect(Collectors.toSet());
   }
 

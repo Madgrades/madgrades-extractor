@@ -1,9 +1,9 @@
 package com.keenant.madgrades.entries;
 
-public class SubjectEntry implements DirEntry, GradesEntry {
+public class SubjectCodeEntry implements DirEntry, GradesEntry {
   private final String subjectCode;
 
-  public SubjectEntry(String subjectCode) {
+  public SubjectCodeEntry(String subjectCode) {
     this.subjectCode = subjectCode;
   }
 

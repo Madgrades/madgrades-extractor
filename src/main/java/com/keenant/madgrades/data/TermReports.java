@@ -22,12 +22,10 @@ public class TermReports {
     return terms.computeIfAbsent(termCode, Term::new);
   }
 
-  public Multimap<String, Map<String, Object>> generateTables(Set<Subject> subjects) {
+  public Multimap<String, Map<String, Object>> generateTables(Set<Subject> scrapedSubjects) {
     Multimap<String, Map<String, Object>> tables = ArrayListMultimap.create();
 
-    for (Subject subject : subjects) {
-      tables.put("subjects", Mappers.SUBJECT.map(subject));
-    }
+    Map<String, Subject> subjects = new HashMap<>();
 
     List<Course> courses = generateCourses();
 
@@ -41,8 +39,9 @@ public class TermReports {
       for (CourseOffering offering : course.getCourseOfferings()) {
         tables.put("course_offerings", Mappers.COURSE_OFFERING.map(offering, course));
 
-        for (String subjectCode : offering.getSubjectCodes()) {
-          tables.put("subject_memberships", Mappers.SUBJECT_MEMBERSHIP.map(subjectCode, offering));
+        for (Subject subject : offering.getSubjects()) {
+          subjects.put(subject.getCode(), subject);
+          tables.put("subject_memberships", Mappers.SUBJECT_MEMBERSHIP.map(subject.getCode(), offering));
         }
 
         for (Entry<Integer, Map<GradeType, Integer>> grades : offering.getGrades().entrySet()) {
@@ -80,6 +79,15 @@ public class TermReports {
           }
         }
       }
+    }
+
+
+    for (Subject subject : scrapedSubjects) {
+      subjects.put(subject.getCode(), subject);
+    }
+
+    for (Subject subject : subjects.values()) {
+      tables.put("subjects", Mappers.SUBJECT.map(subject));
     }
 
     return tables;

@@ -11,7 +11,8 @@ import com.keenant.madgrades.data.TermReports;
 import com.keenant.madgrades.tools.Exporters;
 import com.keenant.madgrades.tools.Parse;
 import com.keenant.madgrades.tools.Scrapers;
-import com.keenant.madgrades.utils.Pdfs;
+import com.keenant.madgrades.utils.PdfRow;
+import com.keenant.madgrades.tools.Pdfs;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
@@ -119,11 +120,11 @@ public class CommandLineApp {
 
     Term term = reports.getOrCreateTerm(termCode);
 
-    try (Stream<List<String>> dirEntries = Pdfs.extractTable(dir, Constants.DIR_COLUMNS)) {
+    try (Stream<PdfRow> dirEntries = Pdfs.extractRows(dir, Constants.DIR_COLUMNS, "SUBJECT:")) {
       term.addSections(dirEntries.flatMap(Parse::dirEntry));
     }
 
-    try (Stream<List<String>> gradesEntries = Pdfs.extractTable(grades, Constants.GRADES_COLUMNS)) {
+    try (Stream<PdfRow> gradesEntries = Pdfs.extractRows(grades, Constants.GRADES_COLUMNS, "TERM")) {
       term.addGrades(gradesEntries.flatMap(Parse::gradeEntry));
     }
   }
