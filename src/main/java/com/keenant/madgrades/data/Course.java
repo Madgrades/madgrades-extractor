@@ -1,6 +1,7 @@
 package com.keenant.madgrades.data;
 
 import com.google.common.collect.Sets;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Objects;
@@ -42,12 +43,12 @@ public class Course {
 
   public boolean isCourse(CourseOffering offering) {
     return courseNumber == offering.getCourseNumber() &&
-        !Sets.intersection(getSubjects(), offering.getSubjects()).isEmpty();
+        !Sets.intersection(getSubjectCodes(), offering.getSubjectCodes()).isEmpty();
   }
 
-  public Set<Subject> getSubjects() {
+  public Set<String> getSubjectCodes() {
     return courseOfferings.stream()
-        .flatMap(o -> o.getSubjects().stream())
+        .flatMap(o -> o.getSubjectCodes().stream())
         .collect(Collectors.toSet());
   }
 

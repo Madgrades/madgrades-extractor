@@ -46,7 +46,7 @@ public class Exporters {
     }
   };
 
-  public static final Exporter<Boolean> SQL = (dir, tables, writeColumns) -> {
+  public static final Exporter<Boolean> SQL = (dir, tables, writeTruncateStmt) -> {
     for (String table : tables.keySet()) {
       File outFile = new File(dir, table + ".sql");
       PrintWriter writer = new PrintWriter(outFile);
@@ -57,13 +57,14 @@ public class Exporters {
           .distinct()
           .collect(Collectors.toList());
 
-      writer.print("INSERT INTO " + table + " ");
-      if (writeColumns) {
-        writer.print("(");
-        writer.print(fields.stream().collect(Collectors.joining(",")));
-        writer.print(") ");
+      if (writeTruncateStmt) {
+        writer.println("TRUNCATE " + table + ";");
       }
 
+      writer.print("INSERT INTO " + table + " ");
+      writer.print("(");
+      writer.print(fields.stream().collect(Collectors.joining(",")));
+      writer.print(") ");
       writer.print("VALUES ");
 
       int i = 0;

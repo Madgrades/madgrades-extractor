@@ -1,6 +1,7 @@
 package com.keenant.madgrades.data;
 
 import com.keenant.madgrades.utils.GradeType;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 public class CourseOffering {
   private final int termCode;
   private final int courseNumber;
-  private final Set<Subject> subjects;
+  private final Map<String, Subject> subjects;
   private final String name;
   private final Set<Section> sections;
 
@@ -28,8 +29,8 @@ public class CourseOffering {
   public CourseOffering(int termCode, int courseNumber, Subject subject, String name, Set<Section> sections) {
     this.termCode = termCode;
     this.courseNumber = courseNumber;
-    this.subjects = new HashSet<Subject>() {{
-      add(subject);
+    this.subjects = new HashMap<String, Subject>() {{
+      put(subject.getCode(), subject);
     }};
     this.name = name;
     this.sections = sections;
@@ -42,8 +43,7 @@ public class CourseOffering {
    * @return the unique id
    */
   public UUID generateUuid() {
-    String subjectCodesStr = subjects.stream()
-        .map(Subject::getCode)
+    String subjectCodesStr = subjects.keySet().stream()
         .sorted()
         .collect(Collectors.joining());
     String uniqueStr = termCode + "" + courseNumber + subjectCodesStr;
@@ -58,8 +58,12 @@ public class CourseOffering {
     return courseNumber;
   }
 
-  public Set<Subject> getSubjects() {
-    return subjects;
+  public Set<String> getSubjectCodes() {
+    return subjects.keySet();
+  }
+
+  public Collection<Subject> getSubjects() {
+    return subjects.values();
   }
 
   public Set<Section> getSections() {
@@ -93,7 +97,7 @@ public class CourseOffering {
   }
 
   public void addSubject(Subject subject) {
-    subjects.add(subject);
+    subjects.put(subject.getCode(), subject);
   }
 
   private void addGrades(int sectionNumber, Map<GradeType, Integer> distribution) {
