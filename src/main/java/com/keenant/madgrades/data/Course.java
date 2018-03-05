@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -54,5 +55,20 @@ public class Course {
 
   public void addCourseOffering(CourseOffering offering) {
     courseOfferings.add(offering);
+  }
+
+  public Optional<String> getMostRecentName() {
+    String name = null;
+    int term = 0;
+
+    for (CourseOffering offering : courseOfferings) {
+      if (offering.getTermCode() < term)
+        continue;
+
+      if (offering.getName().isPresent())
+        name = offering.getName().orElse(null);
+    }
+
+    return Optional.ofNullable(name);
   }
 }

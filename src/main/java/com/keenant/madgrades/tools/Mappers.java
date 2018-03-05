@@ -19,10 +19,12 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 public class Mappers {
-  public static final NoArgObjectMapper<Course> COURSE = (course) -> ImmutableMap.of(
-      "uuid", course.generateUuid().toString(),
-      "number", course.getCourseNumber()
-  );
+  public static final NoArgObjectMapper<Course> COURSE = (course) ->
+      new LinkedHashMap<String, Object>() {{
+        put("uuid", course.generateUuid().toString());
+        put("name", course.getMostRecentName().orElse(null));
+        put("number", course.getCourseNumber());
+      }};
 
   public static final ObjectMapper<CourseOffering, Course> COURSE_OFFERING = (offering, course) ->
       new LinkedHashMap<String, Object>() {{
