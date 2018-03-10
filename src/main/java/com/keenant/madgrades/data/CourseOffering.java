@@ -1,15 +1,16 @@
 package com.keenant.madgrades.data;
 
 import com.keenant.madgrades.utils.GradeType;
+import java.lang.ref.Reference;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -21,8 +22,8 @@ public class CourseOffering {
   private final int termCode;
   private final int courseNumber;
   private final Map<String, Subject> subjects;
-  private final String name;
   private final Set<Section> sections;
+  private final AtomicReference<String> name;
 
   private final Map<Integer, Map<GradeType, Integer>> grades = new HashMap<>();
 
@@ -32,8 +33,30 @@ public class CourseOffering {
     this.subjects = new HashMap<String, Subject>() {{
       put(subject.getCode(), subject);
     }};
-    this.name = name;
+    this.name = new AtomicReference<>(name);
     this.sections = sections;
+  }
+
+  public void merge(CourseOffering other) {
+    if (termCode != other.termCode || courseNumber != other.courseNumber)
+      throw new IllegalArgumentException();
+
+    subjects.putAll(other.subjects);
+    if (name.get() == null)
+      name.set(other.getName().orElse(null));
+    sections.addAll(other.sections);
+  }
+
+  @Override
+  public String toString() {
+    return "CourseOffering{" +
+        "termCode=" + termCode +
+        ", courseNumber=" + courseNumber +
+        ", subjects=" + getSubjectCodes() +
+        ", name='" + name + '\'' +
+        ", sections=" + sections.size() +
+        ", grades=" + grades.size() +
+        '}';
   }
 
   /**
@@ -71,7 +94,7 @@ public class CourseOffering {
   }
 
   public Optional<String> getName() {
-    return Optional.ofNullable(name);
+    return Optional.ofNullable(name.get());
   }
 
   public Map<Integer, Map<GradeType, Integer>> getGrades() {

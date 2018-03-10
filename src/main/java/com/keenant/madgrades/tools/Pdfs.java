@@ -72,7 +72,8 @@ public class Pdfs {
         Iterator<List<RectangularTextContainer>> iterator = table.getRows().iterator();
         while (iterator.hasNext()) {
           List<RectangularTextContainer> cols = iterator.next();
-          String joined = cols.stream().map(RectangularTextContainer::getText)
+          String joined = cols.stream()
+              .map(RectangularTextContainer::getText)
               .collect(Collectors.joining(""));
           if (joined.contains(removeUntil)) {
             break;

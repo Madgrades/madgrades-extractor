@@ -70,6 +70,25 @@ public class Scrapers {
     return results;
   }
 
+  @Deprecated
+  public static Map<Integer, String> scrapeSchedules() throws IOException {
+    Map<Integer, String> results = new HashMap<>();
+    Document doc = Jsoup.connect(Constants.SCHEDULES_URL).get();
+
+    Elements links = doc.select("a");
+
+    for (Element element : links) {
+      String url = element.attr("href");
+
+      if (url.endsWith("pdf")) {
+        String[] split = element.text().split(" ");
+        results.put(toTermCode(split[0] + " " + split[1]), url);
+      }
+    }
+
+    return results;
+  }
+
   private static int toTermCode(String termName) {
     int seasonId = 2;
     if (termName.startsWith("Fall"))

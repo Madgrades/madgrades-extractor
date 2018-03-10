@@ -22,7 +22,7 @@ public class Mappers {
   public static final NoArgObjectMapper<Course> COURSE = (course) ->
       new LinkedHashMap<String, Object>() {{
         put("uuid", course.generateUuid().toString());
-        put("name", course.getMostRecentName().orElse(null));
+        put("name", course.getName().orElse(null));
         put("number", course.getCourseNumber());
       }};
 

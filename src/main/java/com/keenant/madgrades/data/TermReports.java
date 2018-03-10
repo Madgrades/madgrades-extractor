@@ -1,9 +1,10 @@
 package com.keenant.madgrades.data;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Table;
 import com.keenant.madgrades.tools.Mappers;
-import com.keenant.madgrades.tools.Scrapers;
 import com.keenant.madgrades.utils.GradeType;
 import com.keenant.madgrades.utils.Room;
 import java.util.ArrayList;
@@ -14,9 +15,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class TermReports {
   private final Map<Integer, Term> terms = new HashMap<>();
+  private final Table<String, Integer, String> fullCourseNames = HashBasedTable.create();
 
   public Term getOrCreateTerm(int termCode) {
     return terms.computeIfAbsent(termCode, Term::new);
@@ -34,6 +37,29 @@ public class TermReports {
     Set<UUID> roomsAdded = new HashSet<>();
 
     for (Course course : courses) {
+      // first we set the course to have a full name
+      boolean fullNameFound = false;
+      for (Subject subject : course.subjects()) {
+        if (subject.getAbbreviation() == null) {
+          continue;
+        }
+        Map<Integer, String> fullNames = fullCourseNames.row(subject.getAbbreviation());
+
+        String fullName = fullNames.get(course.getCourseNumber());
+
+        if (fullName != null) {
+          fullNameFound = true;
+          course.setName(fullName);
+          break;
+        }
+      }
+
+      if (!fullNameFound) {
+        // this doesn't seem to ever happen, but just in case...
+        System.out.println("No full name for: " + course.subjectCodes() + " " + course.getCourseNumber());
+      }
+
+      // now we can save it to the table
       tables.put("courses", Mappers.COURSE.map(course));
 
       for (CourseOffering offering : course.getCourseOfferings()) {
@@ -81,7 +107,6 @@ public class TermReports {
       }
     }
 
-
     for (Subject subject : scrapedSubjects) {
       subjects.put(subject.getCode(), subject);
     }
@@ -94,26 +119,30 @@ public class TermReports {
   }
 
   private List<Course> generateCourses() {
-    List<Course> result = new ArrayList<>(5000);
+    List<Course> courses = new ArrayList<>(5000);
 
     for (Term term : terms.values()) {
       List<CourseOffering> courseOfferings = term.generateCourseOfferings();
 
       for (CourseOffering offering : courseOfferings) {
-        Course course = result.stream()
+        Course course = courses.stream()
             .filter(c -> c.isCourse(offering))
             .findFirst()
             .orElse(null);
 
         if (course == null) {
           course = new Course(offering.getCourseNumber());
-          result.add(course);
+          courses.add(course);
         }
 
         course.addCourseOffering(offering);
       }
     }
 
-    return result;
+    return courses;
+  }
+
+  public void setFullCourseName(String subjectAbbrev, int courseNumber, String name) {
+    fullCourseNames.put(subjectAbbrev, courseNumber, name);
   }
 }

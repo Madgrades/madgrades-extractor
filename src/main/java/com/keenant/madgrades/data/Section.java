@@ -29,6 +29,27 @@ public class Section {
     this.instructors = instructors;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof Section) {
+      Section other = (Section) o;
+      return termCode == other.termCode &&
+          courseNumber == other.courseNumber &&
+          sectionType == other.sectionType &&
+          sectionNumber == other.sectionNumber &&
+          Objects.equals(schedule, other.schedule) &&
+          Objects.equals(room, other.room) &&
+          instructors.keySet().size() == other.instructors.keySet().size() &&
+          instructors.keySet().containsAll(other.instructors.keySet());
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(termCode, courseNumber, sectionType, sectionNumber, schedule, room, instructors);
+  }
+
   public UUID generateUuid(CourseOffering offering) {
     String instructorsStr = instructors.keySet().stream()
         .sorted()
