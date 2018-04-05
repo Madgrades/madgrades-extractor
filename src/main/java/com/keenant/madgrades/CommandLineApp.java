@@ -3,7 +3,6 @@ package com.keenant.madgrades;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import com.google.common.base.Splitter;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.io.CharStreams;
@@ -12,23 +11,20 @@ import com.keenant.madgrades.data.Term;
 import com.keenant.madgrades.data.TermReports;
 import com.keenant.madgrades.tools.Exporters;
 import com.keenant.madgrades.tools.Parse;
+import com.keenant.madgrades.tools.Pdfs;
 import com.keenant.madgrades.tools.Scrapers;
 import com.keenant.madgrades.utils.PdfRow;
-import com.keenant.madgrades.tools.Pdfs;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
 
 public class CommandLineApp {
   public static class Args {
@@ -134,7 +130,7 @@ public class CommandLineApp {
     int courseNameIndex = -1;
 
     for (String line : lines) {
-      List<String> fields = Splitter.on(",").splitToList(line);
+      List<String> fields = Arrays.asList(line.split(",(?=([^\"]|\"[^\"]*\")*$)"));
 
       if (courseNumberIndex < 0) {
         courseNumberIndex = fields.indexOf("Course Number");
@@ -143,9 +139,9 @@ public class CommandLineApp {
         continue;
       }
 
-      String subjectAbbrev = fields.get(subjectAbbrevIndex);
+      String subjectAbbrev = fields.get(subjectAbbrevIndex).replaceAll("\"", "");
       int courseNumber = Integer.parseInt(fields.get(courseNumberIndex));
-      String name = fields.get(courseNameIndex);
+      String name = fields.get(courseNameIndex).replaceAll("\"", "");
 
       reports.setFullCourseName(subjectAbbrev, courseNumber, name);
     }
