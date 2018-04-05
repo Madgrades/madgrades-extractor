@@ -24,7 +24,6 @@ public class CourseOffering {
   private final Map<String, Subject> subjects;
   private final Set<Section> sections;
   private final AtomicReference<String> name;
-
   private final Map<Integer, Map<GradeType, Integer>> grades = new HashMap<>();
 
   public CourseOffering(int termCode, int courseNumber, Subject subject, String name, Set<Section> sections) {
@@ -33,8 +32,8 @@ public class CourseOffering {
     this.subjects = new HashMap<String, Subject>() {{
       put(subject.getCode(), subject);
     }};
-    this.name = new AtomicReference<>(name);
     this.sections = sections;
+    this.name = new AtomicReference<>(name);
   }
 
   public void merge(CourseOffering other) {
@@ -42,21 +41,12 @@ public class CourseOffering {
       throw new IllegalArgumentException();
 
     subjects.putAll(other.subjects);
+    sections.addAll(other.sections);
     if (name.get() == null)
       name.set(other.getName().orElse(null));
-    sections.addAll(other.sections);
-  }
-
-  @Override
-  public String toString() {
-    return "CourseOffering{" +
-        "termCode=" + termCode +
-        ", courseNumber=" + courseNumber +
-        ", subjects=" + getSubjectCodes() +
-        ", name='" + name + '\'' +
-        ", sections=" + sections.size() +
-        ", grades=" + grades.size() +
-        '}';
+    for (int sectionNumber : other.grades.keySet()) {
+      addGrades(sectionNumber, other.grades.get(sectionNumber));
+    }
   }
 
   /**

@@ -13,15 +13,6 @@ public class Subject {
     this.code = code;
   }
 
-  @Override
-  public String toString() {
-    return "Subject{" +
-        "name='" + name + '\'' +
-        ", abbreviation='" + abbreviation + '\'' +
-        ", code='" + code + '\'' +
-        '}';
-  }
-
   public String getName() {
     return name;
   }

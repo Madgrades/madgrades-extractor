@@ -18,15 +18,6 @@ public class Course {
     this.courseNumber = courseNumber;
   }
 
-  @Override
-  public String toString() {
-    return "Course{" +
-        "courseNumber=" + courseNumber +
-        ", name='" + name + '\'' +
-        ", courseOfferings=" + courseOfferings +
-        '}';
-  }
-
   public void setName(String name) {
     this.name = name;
   }
@@ -73,6 +64,11 @@ public class Course {
   public boolean isCourse(CourseOffering offering) {
     return courseNumber == offering.getCourseNumber() &&
         !Sets.intersection(subjectCodes(), offering.getSubjectCodes()).isEmpty();
+  }
+
+  public boolean isCourse(Course other) {
+    return courseNumber == other.courseNumber &&
+        !Sets.intersection(subjectCodes(), other.subjectCodes()).isEmpty();
   }
 
   public void addCourseOffering(CourseOffering offering) {

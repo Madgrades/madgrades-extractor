@@ -56,7 +56,7 @@ public class TermReports {
 
       if (!fullNameFound) {
         // this doesn't seem to ever happen, but just in case...
-        System.out.println("No full name for: " + course.subjectCodes() + " " + course.getCourseNumber());
+        // TODO? System.out.println("No full name for: " + course.subjectCodes() + " " + course.getCourseNumber());
       }
 
       // now we can save it to the table
@@ -138,6 +138,30 @@ public class TermReports {
         course.addCourseOffering(offering);
       }
     }
+
+    Set<Course> remove = new HashSet<>();
+
+    // post process merging
+    for (Course a : courses) {
+      if (remove.contains(a))
+        continue;
+
+      for (Course b : courses) {
+        if (a.equals(b))
+          continue;
+        if (remove.contains(b))
+          continue;
+
+        if (a.isCourse(b)) {
+          // TODO? System.out.println("Merging: " + a + " + " + b);
+          for (CourseOffering offering : b.getCourseOfferings())
+            a.addCourseOffering(offering);
+          remove.add(b);
+        }
+      }
+    }
+
+    courses.removeAll(remove);
 
     return courses;
   }

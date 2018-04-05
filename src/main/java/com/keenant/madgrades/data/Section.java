@@ -17,9 +17,8 @@ public class Section {
   private final Room room;
   private final Map<Integer, String> instructors;
 
-  public Section(int termCode, int courseNumber,
-      SectionType sectionType, int sectionNumber, Schedule schedule,
-      Room room, Map<Integer, String> instructors) {
+  public Section(int termCode, int courseNumber, SectionType sectionType,
+      int sectionNumber, Schedule schedule, Room room, Map<Integer, String> instructors) {
     this.termCode = termCode;
     this.courseNumber = courseNumber;
     this.sectionType = sectionType;
