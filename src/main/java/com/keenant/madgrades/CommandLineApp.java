@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +36,16 @@ public class CommandLineApp {
     private String excludeTerms;
 
     @Parameter(names = {"-out", "-o"}, description = "Output directory path for exported files (ex. -o ../data)")
-    private String outputPath = ".";
+    private String outputPath = "./";
 
     @Parameter(names = {"-l", "-list"}, description = "Output list of terms to extract")
     private boolean listTerms = false;
+
+    @Parameter(names = {"-d", "-download"}, description = "Download the PDF reports instead of extracting data")
+    private boolean downloadPdfs = false;
+
+    @Parameter(names = {"-f", "-format"}, description = "The output format")
+    private OutputFormat format = OutputFormat.CSV;
   }
 
   public static void main(String[] argv) throws Exception {
@@ -50,8 +57,18 @@ public class CommandLineApp {
           .build()
           .parse(argv);
     } catch (ParameterException e) {
+      System.err.println(e.getMessage());
       e.usage();
       return;
+    }
+
+    // require output directory to work
+    File outDirectory = new File(args.outputPath);
+    if (!outDirectory.exists()) {
+      if (!outDirectory.mkdir()) {
+        System.err.println("Unable to open output directory.");
+        return;
+      }
     }
 
     System.out.println("Scraping for subjects and report URLs...");
@@ -59,19 +76,42 @@ public class CommandLineApp {
     Map<Integer, String> dirReports = Scrapers.scrapeDirReports();
     Map<Integer, String> gradeReports = Scrapers.scrapeGradeReports();
 
+    if (args.downloadPdfs) {
+      System.out.println("Downloading all report PDFs...");
+
+      for (Map.Entry<Integer, String> dirReport : dirReports.entrySet()) {
+        URL url = new URL(dirReport.getValue());
+        File out = new File(outDirectory, dirReport.getKey() + "-dir.pdf");
+
+        System.out.println(url + " -> " + out);
+        Files.copy(url.openStream(), out.toPath());
+      }
+
+      for (Map.Entry<Integer, String> gradeReport : gradeReports.entrySet()) {
+        URL url = new URL(gradeReport.getValue());
+        File out = new File(outDirectory, gradeReport.getKey() + "-grades.pdf");
+
+        System.out.println(url + " -> " + out);
+        Files.copy(url.openStream(), out.toPath());
+      }
+
+      System.out.println("Done.");
+      return;
+    }
+
     List<Integer> termCodes = Sets.union(dirReports.keySet(), gradeReports.keySet()).stream()
         .sorted()
         .collect(Collectors.toList());
 
     if (args.terms != null) {
-      List<Integer> excludeTerms = Arrays.stream(args.terms.split(","))
+      List<Integer> includeTerms = Arrays.stream(args.terms.split(","))
           .map(Integer::parseInt)
           .collect(Collectors.toList());
-      termCodes.removeIf(i -> !excludeTerms.contains(i));
+      termCodes.removeIf(i -> !includeTerms.contains(i));
     }
 
     if (args.excludeTerms != null) {
-      List<Integer> excludeTerms = Arrays.stream(args.terms.split(","))
+      List<Integer> excludeTerms = Arrays.stream(args.excludeTerms.split(","))
           .map(Integer::parseInt)
           .collect(Collectors.toList());
       termCodes.removeIf(excludeTerms::contains);
@@ -87,15 +127,6 @@ public class CommandLineApp {
     if (termCodes.isEmpty()) {
       System.err.println("No terms to extract.");
       return;
-    }
-
-    // require output directory to work
-    File outDirectory = new File(args.outputPath);
-    if (!outDirectory.exists()) {
-      if (!outDirectory.mkdir()) {
-        System.err.println("Unable to open output directory.");
-        return;
-      }
     }
 
     TermReports reports = new TermReports();
@@ -117,7 +148,7 @@ public class CommandLineApp {
     Multimap<String, Map<String, Object>> tables = reports.generateTables(subjects);
 
     System.out.println("Exporting to '" + outDirectory.getAbsolutePath() + "'");
-    Exporters.SQL.export(outDirectory, tables, true);
+    args.format.getExporter().export(outDirectory, tables, true);
     System.out.println("Done.");
   }
 

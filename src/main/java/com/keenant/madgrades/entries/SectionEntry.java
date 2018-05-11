@@ -2,7 +2,7 @@ package com.keenant.madgrades.entries;
 
 import com.keenant.madgrades.data.DirSection;
 import com.keenant.madgrades.data.Schedule;
-import com.keenant.madgrades.utils.Room;
+import com.keenant.madgrades.data.Room;
 import com.keenant.madgrades.utils.SectionType;
 import javax.annotation.Nullable;
 

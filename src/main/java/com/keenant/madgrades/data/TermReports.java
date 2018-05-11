@@ -6,7 +6,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 import com.keenant.madgrades.tools.Mappers;
 import com.keenant.madgrades.utils.GradeType;
-import com.keenant.madgrades.utils.Room;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class TermReports {
   private final Map<Integer, Term> terms = new HashMap<>();

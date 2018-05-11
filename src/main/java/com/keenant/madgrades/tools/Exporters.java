@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Exporters {
+  /**
+   * Exports to CSV files per table.
+   */
   public static final Exporter<Boolean> CSV = (dir, tables, writeHeaders) -> {
     for (String table : tables.keySet()) {
       File outFile = new File(dir, table + ".csv");
@@ -46,7 +49,10 @@ public class Exporters {
     }
   };
 
-  public static final Exporter<Boolean> SQL = (dir, tables, writeTruncateStmt) -> {
+  /**
+   * Exports to MySQL insert statements .sql files per table.
+   */
+  public static final Exporter<Boolean> MYSQL = (dir, tables, writeTruncateStmt) -> {
     for (String table : tables.keySet()) {
       File outFile = new File(dir, table + ".sql");
       PrintWriter writer = new PrintWriter(outFile);

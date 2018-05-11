@@ -12,7 +12,7 @@ import com.keenant.madgrades.data.Teaching;
 import com.keenant.madgrades.utils.GradeType;
 import com.keenant.madgrades.utils.NoArgObjectMapper;
 import com.keenant.madgrades.utils.ObjectMapper;
-import com.keenant.madgrades.utils.Room;
+import com.keenant.madgrades.data.Room;
 import java.time.DayOfWeek;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;

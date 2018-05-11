@@ -12,7 +12,7 @@ import com.keenant.madgrades.entries.SubjectNameEntry;
 import com.keenant.madgrades.utils.DaySchedule;
 import com.keenant.madgrades.utils.GradeType;
 import com.keenant.madgrades.utils.PdfRow;
-import com.keenant.madgrades.utils.Room;
+import com.keenant.madgrades.data.Room;
 import com.keenant.madgrades.utils.SectionType;
 import com.keenant.madgrades.utils.TimeSchedule;
 import java.util.LinkedHashMap;

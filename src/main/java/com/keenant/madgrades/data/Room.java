@@ -1,4 +1,4 @@
-package com.keenant.madgrades.utils;
+package com.keenant.madgrades.data;
 
 import java.util.Objects;
 import java.util.UUID;
