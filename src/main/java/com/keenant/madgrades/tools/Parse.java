@@ -72,6 +72,14 @@ public class Parse {
 
     if (cols.get(11).length() > 0) {
       instructorName = cols.get(11);
+
+      // some names are "LAST, FIRST", we reorder them to "FIRST LAST"
+      if (instructorName.contains(",")) {
+        String[] names = instructorName.split(",");
+        if (names.length == 2) {
+          instructorName = names[1] + " " + names[0];
+        }
+      }
     }
 
     Schedule schedule = new Schedule(times, days);

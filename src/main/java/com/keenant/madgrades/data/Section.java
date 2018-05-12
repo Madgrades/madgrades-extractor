@@ -68,10 +68,6 @@ public class Section {
         instructors.equals(other.getInstructors());
   }
 
-  public int getTermCode() {
-    return termCode;
-  }
-
   public int getCourseNumber() {
     return courseNumber;
   }
