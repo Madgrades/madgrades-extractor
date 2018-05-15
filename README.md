@@ -38,14 +38,21 @@ Only SQL dumps are exported via command-line currently.
 ```
 Usage: <main class> [options]
   Options:
+    -d, -download
+      Download the PDF reports instead of extracting data
+      Default: false
     -e, -exclude
       Comma-separated list of term codes to exclude (ex. -e 1082)
+    -f, -format
+      The output format
+      Default: CSV
+      Possible Values: [CSV, MYSQL]
     -l, -list
       Output list of terms to extract
       Default: false
     -out, -o
       Output directory path for exported files (ex. -o ../data)
-      Default: .
+      Default: ./
     -t, -terms
       Comma-separated list of term codes to run (ex. -t 1082,1072)
 ```
