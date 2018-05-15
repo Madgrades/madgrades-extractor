@@ -85,8 +85,8 @@ public class Mappers {
       new LinkedHashMap<String, Object>() {{
           put("course_offering_uuid", offering.generateUuid().toString());
           put("section_number", grades.getSectionNumber());
-          for (Entry<GradeType, Integer> entry : grades.getGrades().entrySet()) {
-            put(entry.getKey().name().toLowerCase() + "_count", entry.getValue());
+          for (GradeType type : GradeType.values()) {
+            put(type.name().toLowerCase() + "_count", grades.getGrades().getOrDefault(type, 0));
           }
       }};
 

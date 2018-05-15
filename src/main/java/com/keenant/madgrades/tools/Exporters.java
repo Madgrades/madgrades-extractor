@@ -32,7 +32,7 @@ public class Exporters {
           Object value = entry.get(field);
 
           if (value instanceof String) {
-            writer.print('"' + value.toString() + '"');
+            writer.print('"' + value.toString().replace("\"", "\"\"") + '"');
           }
           else {
             writer.print(value);
