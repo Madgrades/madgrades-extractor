@@ -70,8 +70,8 @@ public class TermReports {
         }
 
         for (Entry<Integer, Map<GradeType, Integer>> grades : offering.getGrades().entrySet()) {
-          GradeDistribution dist = new GradeDistribution(grades.getKey(), grades.getValue());
-          tables.put("grade_distributions", Mappers.GRADE_DISTRIBUTION.map(dist, offering));
+          GradeDistribution dist = new GradeDistribution(offering, grades.getKey(), grades.getValue());
+          tables.put("grade_distributions", Mappers.GRADE_DISTRIBUTION.map(dist));
         }
 
         for (Section section : offering.getSections()) {

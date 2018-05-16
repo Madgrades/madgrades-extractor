@@ -81,13 +81,15 @@ public class Mappers {
       "course_offering_uuid", offering.generateUuid().toString()
   );
 
-  public static final ObjectMapper<GradeDistribution, CourseOffering> GRADE_DISTRIBUTION = (grades, offering) ->
+  public static final NoArgObjectMapper<GradeDistribution> GRADE_DISTRIBUTION = (grades) ->
       new LinkedHashMap<String, Object>() {{
-          put("course_offering_uuid", offering.generateUuid().toString());
-          put("section_number", grades.getSectionNumber());
-          for (GradeType type : GradeType.values()) {
-            put(type.name().toLowerCase() + "_count", grades.getGrades().getOrDefault(type, 0));
-          }
+        double gpa = grades.calculateGpa();
+        put("course_offering_uuid", grades.getCourseOffering().generateUuid().toString());
+        put("section_number", grades.getSectionNumber());
+        put("gpa", Double.isNaN(gpa) ? null : gpa);
+        for (GradeType type : GradeType.values()) {
+          put(type.name().toLowerCase() + "_count", grades.getGrades().getOrDefault(type, 0));
+        }
       }};
 
   public static final NoArgObjectMapper<Subject> SUBJECT = (subject) -> ImmutableMap.of(
