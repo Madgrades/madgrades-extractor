@@ -19,7 +19,7 @@ The conversion process for a single term is as follows:
     
     c. Collate section info as necessary (i.e. 2 instructors for 1 single section)
     
-    d. Collate courses which appear to be cross-listed (based on similarity between sections offered) 
+    d. Collate courses which appear to be cross-listed (based on similarity between sections offered)
     
 2. Open grades report for the term.
 
@@ -33,19 +33,24 @@ Typically all terms are extracted so this process repeats for each term.
 
 Build it yourself with `mvn clean install` or grab a release from the releases page.
 
-Only SQL dumps are exported via command-line currently.
-
 ```
 Usage: <main class> [options]
   Options:
+    -d, -download
+      Download the PDF reports instead of extracting data
+      Default: false
     -e, -exclude
       Comma-separated list of term codes to exclude (ex. -e 1082)
+    -f, -format
+      The output format
+      Default: CSV
+      Possible Values: [CSV, MYSQL]
     -l, -list
       Output list of terms to extract
       Default: false
     -out, -o
       Output directory path for exported files (ex. -o ../data)
-      Default: .
+      Default: ./
     -t, -terms
       Comma-separated list of term codes to run (ex. -t 1082,1072)
 ```
@@ -58,6 +63,6 @@ Examples:
 
 ## Relational Diagram
 
-Currently it can output a collection of relational entities modeled something like this:
+The CSV or SQL dumps are in the format of a collection of relational entities modeled something like this:
 
 ![diagram](https://cdn.rawgit.com/thekeenant/3c6dbb04f94243df6e84f152e40d87a9/raw/8ce37501a495447f5b71315a6f9aef7b4b7013bc/madgrades-diagram.svg)
