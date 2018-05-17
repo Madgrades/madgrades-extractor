@@ -37,7 +37,7 @@ public class Room {
       return null;
     else if (roomStr.equals("ONLINE"))
       return ONLINE;
-    else if (roomStr.equals("OFF CAMPUS"))
+    else if (roomStr.contains("OFF CAMPU")) // some reports don't have the full string
       return OFF_CAMPUS;
 
     String[] split = roomStr.split(" ");

@@ -42,7 +42,7 @@ public class Parse {
     if (joined.toUpperCase().contains("SUBJECT")) {
       int lParen = joined.lastIndexOf("(");
       int rParen = joined.lastIndexOf(")");
-      String subjectCode = joined.substring(lParen + 1, rParen - 1).trim();
+      String subjectCode = joined.substring(lParen + 1, rParen).trim();
       String subjectName = text.substring(8, text.lastIndexOf("(") - 1).trim();
 
       return Stream.of(new SubjectCodeEntry(subjectCode), new SubjectNameEntry(subjectName));

@@ -65,7 +65,7 @@ public class Pdfs {
       Table textTable = ALGORITHM.extract(page, Collections.emptyList()).get(0);
 
 
-      // TODO: This seems ugly, but it is neccessary
+      // TODO: This seems ugly, but it is necessary
       // For some reason, we can parse the same page twice with different columns, and get
       // a different number of rows. This removes the imbalance by removing up until a certain
       // point. "SUBJECT:" is for dir reports, "TERM" is for grade reports.
@@ -77,7 +77,6 @@ public class Pdfs {
               .map(RectangularTextContainer::getText)
               .collect(Collectors.joining(""))
               .toUpperCase();
-
 
           if (joined.contains(removeUntil)) {
             break;
