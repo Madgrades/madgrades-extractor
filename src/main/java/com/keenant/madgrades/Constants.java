@@ -19,6 +19,11 @@ public class Constants {
       55, 80, 95, 130, 150, 210, 295, 360, 420, 480, 550
   ).mapToObj(i -> (float) i).collect(Collectors.toList());
 
+  /** columns for "Final DIR" PDF's specifically for 1124 */
+  public static final List<Float> DIR_COLUMNS_1124 = IntStream.of(
+      55, 80, 95, 130, 131, 220, 370, 440, 490, 520, 580
+  ).mapToObj(i -> (float) i).collect(Collectors.toList());
+
   /** day abbreviation/character to day of week enum */
   public static final Map<String, DayOfWeek> STR_TO_DAY = new HashMap<String, DayOfWeek>() {{
     put("M", DayOfWeek.MONDAY);

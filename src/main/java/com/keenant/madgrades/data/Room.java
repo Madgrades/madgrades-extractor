@@ -42,6 +42,10 @@ public class Room {
 
     String[] split = roomStr.split(" ");
 
+    if (roomStr.length() < 5) {
+      throw new IllegalArgumentException("Cannot parse room: '" + roomStr + "'");
+    }
+
     if (split.length == 1) {
       String firstFive = roomStr.substring(0, 5);
       String room = roomStr.substring(5, roomStr.length());

@@ -21,37 +21,48 @@ public class TimeSchedule {
    * Parse a time schedule string, i.e.: 14:00-14:50 or 07:30-08:20
    * @param timeStr the time string
    * @return the parsed time schedule
-   * @throws ParseException
+   * @throws ParseException if the input is not parsable
    */
   public static TimeSchedule parse(String timeStr) {
     Calendar calendar = Calendar.getInstance();
-    int startTime = -1;
-    int endTime = -1;
+    int startTime;
+    int endTime;
+
+    String[] timeSplit = null;
 
     if (timeStr.contains(" - ")) {
-      String[] timeSplit = timeStr.split(" - ");
-
-      String startTimeStr = timeSplit[0];
-      String endTimeStr = timeSplit[1];
-
-      Date startDate;
-      try {
-        startDate = TIME_FORMAT.parse(startTimeStr);
-      } catch (ParseException e) {
-        throw new IllegalArgumentException(timeStr, e);
-      }
-      calendar.setTime(startDate);
-      startTime = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
-
-      Date endDate;
-      try {
-        endDate = TIME_FORMAT.parse(endTimeStr);
-      } catch (ParseException e) {
-        throw new IllegalArgumentException(timeStr, e);
-      }
-      calendar.setTime(endDate);
-      endTime = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
+      timeSplit = timeStr.split(" - ");
+    } else if (timeStr.contains(" ")) {
+      timeSplit = timeStr.split(" ");
     }
+
+    if (timeSplit == null ||
+        timeSplit.length != 2 ||
+        timeSplit[0].length() < 4 ||
+        timeSplit[1].length() < 4) {
+      return new TimeSchedule(-1, -1);
+    }
+
+    String startTimeStr = timeSplit[0];
+    String endTimeStr = timeSplit[1];
+
+    Date startDate;
+    try {
+      startDate = TIME_FORMAT.parse(startTimeStr);
+    } catch (ParseException e) {
+      throw new IllegalArgumentException(timeStr, e);
+    }
+    calendar.setTime(startDate);
+    startTime = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
+
+    Date endDate;
+    try {
+      endDate = TIME_FORMAT.parse(endTimeStr);
+    } catch (ParseException e) {
+      throw new IllegalArgumentException(timeStr, e);
+    }
+    calendar.setTime(endDate);
+    endTime = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
 
     return new TimeSchedule(startTime, endTime);
   }

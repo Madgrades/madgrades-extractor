@@ -64,6 +64,7 @@ public class Pdfs {
       // table with no columns
       Table textTable = ALGORITHM.extract(page, Collections.emptyList()).get(0);
 
+
       // TODO: This seems ugly, but it is neccessary
       // For some reason, we can parse the same page twice with different columns, and get
       // a different number of rows. This removes the imbalance by removing up until a certain
@@ -74,7 +75,10 @@ public class Pdfs {
           List<RectangularTextContainer> cols = iterator.next();
           String joined = cols.stream()
               .map(RectangularTextContainer::getText)
-              .collect(Collectors.joining(""));
+              .collect(Collectors.joining(""))
+              .toUpperCase();
+
+
           if (joined.contains(removeUntil)) {
             break;
           }
@@ -84,7 +88,7 @@ public class Pdfs {
         iterator = textTable.getRows().iterator();
         while (iterator.hasNext()) {
           List<RectangularTextContainer> cols = iterator.next();
-          String joined = cols.get(0).getText();
+          String joined = cols.get(0).getText().toUpperCase();
           if (joined.contains(removeUntil)) {
             break;
           }
