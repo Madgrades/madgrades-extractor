@@ -1,4 +1,4 @@
-# madgrades
+# madgrades-extractor [![Build Status](https://travis-ci.org/Madgrades/madgrades-extractor.svg?branch=master)](https://travis-ci.org/Madgrades/madgrades-extractor)
 
 This project reads UW Madison grade distribution and course report PDF files (published by the UW Madison Office
 of the Registrar) and converts them into CSV or SQL dump files.
