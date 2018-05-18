@@ -37,10 +37,14 @@ public class Room {
       return null;
     else if (roomStr.equals("ONLINE"))
       return ONLINE;
-    else if (roomStr.equals("OFF CAMPUS"))
+    else if (roomStr.contains("OFF CAMPU")) // some reports don't have the full string
       return OFF_CAMPUS;
 
     String[] split = roomStr.split(" ");
+
+    if (roomStr.length() < 5) {
+      throw new IllegalArgumentException("Cannot parse room: '" + roomStr + "'");
+    }
 
     if (split.length == 1) {
       String firstFive = roomStr.substring(0, 5);

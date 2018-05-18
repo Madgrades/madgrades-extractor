@@ -28,7 +28,7 @@ public class Parse {
    * @param row the table row
    * @return the stream of entries processed from the row
    */
-  public static Stream<DirEntry> dirEntry(PdfRow row) {
+  public static Stream<DirEntry> dirEntry(PdfRow row, int termCode) {
     String text = row.getText();
     List<String> cols = row.getColumns();
 
@@ -39,10 +39,12 @@ public class Parse {
       return Stream.empty();
 
     // extract subject code
-    if (joined.contains("SUBJECT:")) {
-      String subjectCode = joined.substring(joined.length() - 4, joined.length() - 1);
-      int indexOfParen = text.indexOf("(");
-      String subjectName = text.substring(8, indexOfParen).trim();
+    if (joined.toUpperCase().contains("SUBJECT")) {
+      int lParen = joined.lastIndexOf("(");
+      int rParen = joined.lastIndexOf(")");
+      String subjectCode = joined.substring(lParen + 1, rParen).trim();
+      String subjectName = text.substring(8, text.lastIndexOf("(") - 1).trim();
+
       return Stream.of(new SubjectCodeEntry(subjectCode), new SubjectNameEntry(subjectName));
     }
 
@@ -56,8 +58,11 @@ public class Parse {
       return Stream.empty();
     }
 
-    SectionType sectionType = SectionType.valueOf(cols.get(2));
-    int sectionNumber = Integer.parseInt(cols.get(3));
+    int sectionTypeIndex = termCode == 1124 ? 3 : 2;
+    int sectionNumberIndex = termCode == 1124 ? 2 : 3;
+
+    SectionType sectionType = SectionType.valueOf(cols.get(sectionTypeIndex));
+    int sectionNumber = Integer.parseInt(cols.get(sectionNumberIndex));
     TimeSchedule times = TimeSchedule.parse(cols.get(5));
     DaySchedule days = DaySchedule.parse(cols.get(6));
     Room rooms = Room.parse(cols.get(7));

@@ -179,20 +179,17 @@ public class CommandLineApp {
   }
 
   private static void extract(TermReports reports, int termCode, String dirUrl, String gradeUrl) throws Exception {
-    if (termCode == 1124) {
-      System.out.println("Term " + termCode + " is weird and not supported :(");
-      return;
-    }
-
     System.out.println("Extracting term " + termCode);
 
     // get the term
     Term term = reports.getOrCreateTerm(termCode);
 
+    List<Float> dirColumns = termCode == 1124 ? Constants.DIR_COLUMNS_1124 : Constants.DIR_COLUMNS;
+
     // dir report
     InputStream dir = new URL(dirUrl).openStream();
-    try (Stream<PdfRow> dirRows = Pdfs.extractRows(dir, Constants.DIR_COLUMNS, "SUBJECT:")) {
-      term.addSections(dirRows.flatMap(Parse::dirEntry));
+    try (Stream<PdfRow> dirRows = Pdfs.extractRows(dir, dirColumns, "SUBJECT")) {
+      term.addSections(dirRows.flatMap(row -> Parse.dirEntry(row, termCode)));
     }
 
     // grade report

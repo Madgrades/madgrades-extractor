@@ -92,9 +92,10 @@ public class Mappers {
         }
       }};
 
-  public static final NoArgObjectMapper<Subject> SUBJECT = (subject) -> ImmutableMap.of(
-      "code", subject.getCode(),
-      "name", subject.getName(),
-      "abbreviation", subject.getAbbreviation()
-  );
+  public static final NoArgObjectMapper<Subject> SUBJECT = (subject) ->
+      new LinkedHashMap<String, Object>() {{
+        put("code", subject.getCode());
+        put("name", subject.getName());
+        put("abbreviation", subject.getAbbreviation());
+      }};
 }
