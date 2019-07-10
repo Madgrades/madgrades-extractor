@@ -54,7 +54,7 @@ public class Pdfs {
    * @return a stream of string lists, each is a row
    * @throws IOException
    */
-  public static Stream<PdfRow> extractRows(InputStream stream, List<Float> dividers, String removeUntil)
+  public static Stream<PdfRow> extractRows(InputStream stream, List<Float> dividers, String removeUntil, boolean fullText)
       throws IOException {
     // convert stream of pages to stream of list of containers
     return extractPages(stream).flatMap(page -> {
@@ -62,8 +62,7 @@ public class Pdfs {
       Table table = ALGORITHM.extract(page, dividers).get(0);
 
       // table with no columns
-      Table textTable = ALGORITHM.extract(page, Collections.emptyList()).get(0);
-
+      Table textTable = fullText ? ALGORITHM.extract(page, Collections.emptyList()).get(0) : null;
 
       // TODO: This seems ugly, but it is necessary
       // For some reason, we can parse the same page twice with different columns, and get
@@ -84,18 +83,21 @@ public class Pdfs {
           iterator.remove();
         }
 
-        iterator = textTable.getRows().iterator();
-        while (iterator.hasNext()) {
-          List<RectangularTextContainer> cols = iterator.next();
-          String joined = cols.get(0).getText().toUpperCase();
-          if (joined.contains(removeUntil)) {
-            break;
+        if (fullText) {
+          iterator = textTable.getRows().iterator();
+          while (iterator.hasNext()) {
+            List<RectangularTextContainer> cols = iterator.next();
+            String joined = cols.get(0).getText().toUpperCase();
+            if (joined.contains(removeUntil)) {
+              break;
+            }
+            iterator.remove();
           }
-          iterator.remove();
-        }
 
-        if (table.getRows().size() != textTable.getRows().size())
-          throw new IllegalStateException();
+          if (table.getRows().size() != textTable.getRows().size()) {
+            throw new IllegalStateException("Differing # rows: " + table.getRows().size() + " vs " + textTable.getRows().size());
+          }
+        }
       }
 
 
@@ -105,7 +107,7 @@ public class Pdfs {
         List<String> columns = table.getRows().get(i).stream()
             .map(RectangularTextContainer::getText)
             .collect(Collectors.toList());
-        String text = textTable.getRows().get(i).get(0).getText();
+        String text = fullText ? textTable.getRows().get(i).get(0).getText() : null;
         result.add(new PdfRow(columns, text));
       }
 

@@ -188,13 +188,13 @@ public class CommandLineApp {
 
     // dir report
     InputStream dir = new URL(dirUrl).openStream();
-    try (Stream<PdfRow> dirRows = Pdfs.extractRows(dir, dirColumns, "SUBJECT")) {
+    try (Stream<PdfRow> dirRows = Pdfs.extractRows(dir, dirColumns, "SUBJECT", true)) {
       term.addSections(dirRows.flatMap(row -> Parse.dirEntry(row, termCode)));
     }
 
     // grade report
     InputStream grades = new URL(gradeUrl).openStream();
-    try (Stream<PdfRow> gradeRows = Pdfs.extractRows(grades, Constants.GRADES_COLUMNS, "TERM")) {
+    try (Stream<PdfRow> gradeRows = Pdfs.extractRows(grades, Constants.GRADES_COLUMNS, "TERM", false)) {
       term.addGrades(gradeRows.flatMap(Parse::gradeEntry));
     }
   }

@@ -29,7 +29,7 @@ public class Parse {
    * @return the stream of entries processed from the row
    */
   public static Stream<DirEntry> dirEntry(PdfRow row, int termCode) {
-    String text = row.getText();
+    String text = row.getText().orElseThrow(() -> new IllegalStateException("Full text required for dir entries"));
     List<String> cols = row.getColumns();
 
     String joined = cols.stream().collect(Collectors.joining());

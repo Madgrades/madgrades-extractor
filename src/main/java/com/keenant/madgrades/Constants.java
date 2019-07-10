@@ -14,6 +14,9 @@ public class Constants {
       460, 480, 510, 540, 560, 580, 610, 630, 660, 690
   ).mapToObj(i -> (float) i).collect(Collectors.toList());
 
+  /** columns for PDFs at https://registrar.wisc.edu/grade-reports/ found through trial and error */
+  public static final List<Float> GRADES_COLUMNS_2 = GRADES_COLUMNS.subList(4, GRADES_COLUMNS.size());
+
   /** columns for "Final DIR" PDF's https://registrar.wisc.edu/current-reports/ found through trial and error */
   public static final List<Float> DIR_COLUMNS = IntStream.of(
       55, 80, 95, 130, 150, 210, 295, 360, 420, 480, 550

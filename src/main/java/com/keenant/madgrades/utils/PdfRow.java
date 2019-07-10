@@ -1,12 +1,15 @@
 package com.keenant.madgrades.utils;
 
 import java.util.List;
+import java.util.Optional;
+
+import javax.annotation.Nullable;
 
 public class PdfRow {
   private final List<String> columns;
   private final String text;
 
-  public PdfRow(List<String> columns, String text) {
+  public PdfRow(List<String> columns, @Nullable String text) {
     this.columns = columns;
     this.text = text;
   }
@@ -15,7 +18,7 @@ public class PdfRow {
     return columns;
   }
 
-  public String getText() {
-    return text;
+  public Optional<String> getText() {
+    return Optional.ofNullable(text);
   }
 }
