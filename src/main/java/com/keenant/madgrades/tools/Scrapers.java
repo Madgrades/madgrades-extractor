@@ -13,6 +13,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class Scrapers {
+
   public static Set<Subject> scrapeSubjects() throws IOException {
     Set<Subject> subjects = new HashSet<>();
     Document doc = Jsoup.connect(Constants.SUBJECTS_URL).get();
@@ -61,7 +62,8 @@ public class Scrapers {
       String url = element.attr("href");
       String urlLower = url.toLowerCase();
 
-      if (urlLower.contains("report-gradedistribution")) {
+      if (urlLower.contains("report-gradedistribution") || urlLower.contains("stats_distribs")) {
+        //url changed since 2019 fall
         String termName = element.text();
         results.put(toTermCode(termName), url);
       }
@@ -91,18 +93,16 @@ public class Scrapers {
 
   private static int toTermCode(String termName) {
     int seasonId = 2;
-    if (termName.startsWith("Fall"))
+    if (termName.startsWith("Fall")) {
       seasonId = 2;
-    else if (termName.startsWith("Spring"))
+    } else if (termName.startsWith("Spring")) {
       seasonId = 4;
-    else if (termName.startsWith("Summer"))
+    } else if (termName.startsWith("Summer")) {
       seasonId = 6;
+    }
+    int year = Integer.parseInt(termName.split(" ")[2]);
 
-    int year = Integer.parseInt(termName.split(" ")[1]);
-    int base = year - 2001;
-
-    if (seasonId == 2)
-      base += 1;
+    int base = year - 2000;
 
     int start = 101 + base;
 

@@ -28,20 +28,26 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CommandLineApp {
+
   public static class Args {
-    @Parameter(names = {"-t", "-terms"}, description = "Comma-separated list of term codes to run (ex. -t 1082,1072)")
+
+    @Parameter(names = {"-t",
+        "-terms"}, description = "Comma-separated list of term codes to run (ex. -t 1082,1072)")
     private String terms;
 
-    @Parameter(names = {"-e", "-exclude"}, description = "Comma-separated list of term codes to exclude (ex. -e 1082)")
+    @Parameter(names = {"-e",
+        "-exclude"}, description = "Comma-separated list of term codes to exclude (ex. -e 1082)")
     private String excludeTerms;
 
-    @Parameter(names = {"-out", "-o"}, description = "Output directory path for exported files (ex. -o ../data)")
+    @Parameter(names = {"-out",
+        "-o"}, description = "Output directory path for exported files (ex. -o ../data)")
     private String outputPath = "./";
 
     @Parameter(names = {"-l", "-list"}, description = "Output list of terms to extract")
     private boolean listTerms = false;
 
-    @Parameter(names = {"-d", "-download"}, description = "Download the PDF reports instead of extracting data")
+    @Parameter(names = {"-d",
+        "-download"}, description = "Download the PDF reports instead of extracting data")
     private boolean downloadPdfs = false;
 
     @Parameter(names = {"-f", "-format"}, description = "The output format")
@@ -138,7 +144,11 @@ public class CommandLineApp {
       String gradeUrl = gradeReports.get(termCode);
 
       if (dirUrl == null || gradeUrl == null) {
-        System.out.println("Skipping: " + termCode + " (either no dir or no grades)...");
+        if (termCode % 10 == 6) {//summer terms end with 6
+          System.out.println("Summer Term " + termCode + " has no grade report");
+        } else {
+          System.out.println("Skipping: " + termCode + " (either no dir or no grades)...");
+        }
         continue;
       }
 
@@ -178,7 +188,8 @@ public class CommandLineApp {
     }
   }
 
-  private static void extract(TermReports reports, int termCode, String dirUrl, String gradeUrl) throws Exception {
+  private static void extract(TermReports reports, int termCode, String dirUrl, String gradeUrl)
+      throws Exception {
     System.out.println("Extracting term " + termCode);
 
     // get the term
@@ -194,7 +205,8 @@ public class CommandLineApp {
 
     // grade report
     InputStream grades = new URL(gradeUrl).openStream();
-    try (Stream<PdfRow> gradeRows = Pdfs.extractRows(grades, Constants.GRADES_COLUMNS, "TERM", false)) {
+    try (Stream<PdfRow> gradeRows = Pdfs
+        .extractRows(grades, Constants.GRADES_COLUMNS, "TERM", false)) {
       term.addGrades(gradeRows.flatMap(Parse::gradeEntry));
     }
   }
