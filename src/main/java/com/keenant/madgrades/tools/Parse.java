@@ -58,8 +58,12 @@ public class Parse {
       return Stream.empty();
     }
 
-    int sectionTypeIndex = termCode == 1124 ? 3 : 2;
-    int sectionNumberIndex = termCode == 1124 ? 2 : 3;
+    int sectionTypeIndex = 2;
+    int sectionNumberIndex = 3;
+    if (termCode == 1124) {
+      sectionTypeIndex = 3;
+      sectionNumberIndex = 2;
+    }
 
     SectionType sectionType = SectionType.valueOf(cols.get(sectionTypeIndex));
     int sectionNumber = Integer.parseInt(cols.get(sectionNumberIndex));
@@ -77,6 +81,7 @@ public class Parse {
 
     if (cols.get(11).length() > 0) {
       instructorName = cols.get(11);
+      instructorName = instructorName.replace("P / ", "");
 
       // some names are "LAST, FIRST", we reorder them to "FIRST LAST"
       if (instructorName.contains(",")) {

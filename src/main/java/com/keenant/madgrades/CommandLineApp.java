@@ -12,12 +12,10 @@ import com.keenant.madgrades.data.TermReports;
 import com.keenant.madgrades.tools.Exporters;
 import com.keenant.madgrades.tools.Parse;
 import com.keenant.madgrades.tools.Pdfs;
-import com.keenant.madgrades.tools.Scrapers;
 import com.keenant.madgrades.utils.PdfRow;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import com.keenant.madgrades.utils.Scrapers;
+
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -30,6 +28,10 @@ import java.util.stream.Stream;
 public class CommandLineApp {
 
   public static class Args {
+
+    @Parameter(names = {"-r",
+        "-reports"}, description = "Path to the local registrar-reports repository", required = true)
+    private String registrarReports;
 
     @Parameter(names = {"-t",
         "-terms"}, description = "Comma-separated list of term codes to run (ex. -t 1082,1072)")
@@ -45,10 +47,6 @@ public class CommandLineApp {
 
     @Parameter(names = {"-l", "-list"}, description = "Output list of terms to extract")
     private boolean listTerms = false;
-
-    @Parameter(names = {"-d",
-        "-download"}, description = "Download the PDF reports instead of extracting data")
-    private boolean downloadPdfs = false;
 
     @Parameter(names = {"-f", "-format"}, description = "The output format")
     private OutputFormat format = OutputFormat.CSV;
@@ -77,35 +75,12 @@ public class CommandLineApp {
       }
     }
 
-    System.out.println("Scraping for subjects and report URLs...");
+    System.out.println("Scraping for subjects...");
     Set<Subject> subjects = Scrapers.scrapeSubjects();
-    Map<Integer, String> dirReports = Scrapers.scrapeDirReports();
-    Map<Integer, String> gradeReports = Scrapers.scrapeGradeReports();
+    Map<Integer, String> dirReportPaths = Scrapers.scrapeDirReports(args.registrarReports);
+    Map<Integer, String> gradeReportPaths = Scrapers.scrapeGradeReports(args.registrarReports);
 
-    if (args.downloadPdfs) {
-      System.out.println("Downloading all report PDFs...");
-
-      for (Map.Entry<Integer, String> dirReport : dirReports.entrySet()) {
-        URL url = new URL(dirReport.getValue());
-        File out = new File(outDirectory, dirReport.getKey() + "-dir.pdf");
-
-        System.out.println(url + " -> " + out);
-        Files.copy(url.openStream(), out.toPath());
-      }
-
-      for (Map.Entry<Integer, String> gradeReport : gradeReports.entrySet()) {
-        URL url = new URL(gradeReport.getValue());
-        File out = new File(outDirectory, gradeReport.getKey() + "-grades.pdf");
-
-        System.out.println(url + " -> " + out);
-        Files.copy(url.openStream(), out.toPath());
-      }
-
-      System.out.println("Done.");
-      return;
-    }
-
-    List<Integer> termCodes = Sets.union(dirReports.keySet(), gradeReports.keySet()).stream()
+    List<Integer> termCodes = Sets.union(dirReportPaths.keySet(), gradeReportPaths.keySet()).stream()
         .sorted()
         .collect(Collectors.toList());
 
@@ -140,19 +115,19 @@ public class CommandLineApp {
     readAefisCourses(reports, CommandLineApp.class.getResourceAsStream("/aefis_courses.csv"));
 
     for (int termCode : termCodes) {
-      String dirUrl = dirReports.get(termCode);
-      String gradeUrl = gradeReports.get(termCode);
+      String dirPath = dirReportPaths.get(termCode);
+      String gradePath = gradeReportPaths.get(termCode);
 
-      if (dirUrl == null || gradeUrl == null) {
-        if (termCode % 10 == 6) {//summer terms end with 6
-          System.out.println("Summer Term " + termCode + " has no grade report");
+      if (dirPath == null || gradePath == null) {
+        if (termCode % 10 == 6) { //summer terms end with 6
+          System.out.println("Summer Terms (" + termCode + ") do not have grade reports");
         } else {
-          System.out.println("Skipping: " + termCode + " (either no dir or no grades)...");
+          System.out.println("Skipping: " + termCode + ", dirPath=" + dirPath + ", gradePath=" + gradePath);
         }
         continue;
       }
 
-      extract(reports, termCode, dirUrl, gradeUrl);
+      extract(reports, termCode, dirPath, gradePath);
     }
 
     Multimap<String, Map<String, Object>> tables = reports.generateTables(subjects);
@@ -188,23 +163,28 @@ public class CommandLineApp {
     }
   }
 
-  private static void extract(TermReports reports, int termCode, String dirUrl, String gradeUrl)
+  private static void extract(TermReports reports, int termCode, String dirPath, String gradePath)
       throws Exception {
     System.out.println("Extracting term " + termCode);
 
     // get the term
     Term term = reports.getOrCreateTerm(termCode);
 
-    List<Float> dirColumns = termCode == 1124 ? Constants.DIR_COLUMNS_1124 : Constants.DIR_COLUMNS;
+    List<Float> dirColumns = Constants.DIR_COLUMNS;
+    if (termCode == 1124) {
+      dirColumns = Constants.DIR_COLUMNS_1124;
+    } else if (termCode == 1204) {
+      dirColumns = Constants.DIR_COLUMNS_1204;
+    }
 
     // dir report
-    InputStream dir = new URL(dirUrl).openStream();
+    InputStream dir = new FileInputStream(dirPath);
     try (Stream<PdfRow> dirRows = Pdfs.extractRows(dir, dirColumns, "SUBJECT", true)) {
       term.addSections(dirRows.flatMap(row -> Parse.dirEntry(row, termCode)));
     }
 
     // grade report
-    InputStream grades = new URL(gradeUrl).openStream();
+    InputStream grades = new FileInputStream(gradePath);
     try (Stream<PdfRow> gradeRows = Pdfs
         .extractRows(grades, Constants.GRADES_COLUMNS, "TERM", false)) {
       term.addGrades(gradeRows.flatMap(Parse::gradeEntry));
