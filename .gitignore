@@ -3,3 +3,6 @@
 .idea
 target/
 *.iml
+.classpath
+.settings/
+.project

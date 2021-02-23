@@ -24,9 +24,9 @@ public class Constants {
           55, 80, 95, 130, 131, 220, 370, 440, 490, 520, 580
   ).mapToObj(i -> (float) i).collect(Collectors.toList());
 
-  /** columns for "Final DIR" PDF's specifically for 1204 */
-  public static final List<Float> DIR_COLUMNS_1204 = IntStream.of(
-          55, 80, 130, 160, 180, 250, 370, 440, 490, 520, 580
+  /** columns for "Final DIR" PDF's since 1204 */
+  public static final List<Float> DIR_COLUMNS_SINCE_1204 = IntStream.of(
+      55, 80, 130, 160, 180, 250, 370, 440, 490, 520, 580
   ).mapToObj(i -> (float) i).collect(Collectors.toList());
 
   /** day abbreviation/character to day of week enum */

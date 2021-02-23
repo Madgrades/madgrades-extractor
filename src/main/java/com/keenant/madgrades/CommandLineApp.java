@@ -173,8 +173,8 @@ public class CommandLineApp {
     List<Float> dirColumns = Constants.DIR_COLUMNS;
     if (termCode == 1124) {
       dirColumns = Constants.DIR_COLUMNS_1124;
-    } else if (termCode == 1204) {
-      dirColumns = Constants.DIR_COLUMNS_1204;
+    } else if (termCode >= 1204) {
+      dirColumns = Constants.DIR_COLUMNS_SINCE_1204;
     }
 
     // dir report
