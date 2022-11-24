@@ -7,7 +7,7 @@ on:
     types: [submitted]
 jobs:
   build:
-    if: github.event.push || github.event.review.state == 'approved'
+    if: github.event_name == 'push' || github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
