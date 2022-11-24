@@ -14,7 +14,9 @@ import com.keenant.madgrades.tools.Parse;
 import com.keenant.madgrades.tools.Pdfs;
 import com.keenant.madgrades.utils.PdfRow;
 import com.keenant.madgrades.utils.Scrapers;
-
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.CSVReaderHeaderAwareBuilder;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
@@ -29,20 +31,20 @@ public class CommandLineApp {
 
   public static class Args {
 
-    @Parameter(names = {"-r",
-        "-reports"}, description = "Path to the local registrar-reports repository", required = true)
+    @Parameter(names = {"-r", "-reports"},
+        description = "Path to the local registrar-reports repository", required = true)
     private String registrarReports;
 
-    @Parameter(names = {"-t",
-        "-terms"}, description = "Comma-separated list of term codes to run (ex. -t 1082,1072)")
+    @Parameter(names = {"-t", "-terms"},
+        description = "Comma-separated list of term codes to run (ex. -t 1082,1072)")
     private String terms;
 
-    @Parameter(names = {"-e",
-        "-exclude"}, description = "Comma-separated list of term codes to exclude (ex. -e 1082)")
+    @Parameter(names = {"-e", "-exclude"},
+        description = "Comma-separated list of term codes to exclude (ex. -e 1082)")
     private String excludeTerms;
 
-    @Parameter(names = {"-out",
-        "-o"}, description = "Output directory path for exported files (ex. -o ../data)")
+    @Parameter(names = {"-out", "-o"},
+        description = "Output directory path for exported files (ex. -o ../data)")
     private String outputPath = "./";
 
     @Parameter(names = {"-l", "-list"}, description = "Output list of terms to extract")
@@ -56,10 +58,7 @@ public class CommandLineApp {
     Args args = new Args();
 
     try {
-      JCommander.newBuilder()
-          .addObject(args)
-          .build()
-          .parse(argv);
+      JCommander.newBuilder().addObject(args).build().parse(argv);
     } catch (ParameterException e) {
       System.err.println(e.getMessage());
       e.usage();
@@ -80,21 +79,18 @@ public class CommandLineApp {
     Map<Integer, String> dirReportPaths = Scrapers.scrapeDirReports(args.registrarReports);
     Map<Integer, String> gradeReportPaths = Scrapers.scrapeGradeReports(args.registrarReports);
 
-    List<Integer> termCodes = Sets.union(dirReportPaths.keySet(), gradeReportPaths.keySet()).stream()
-        .sorted()
-        .collect(Collectors.toList());
+    List<Integer> termCodes = Sets.union(dirReportPaths.keySet(), gradeReportPaths.keySet())
+        .stream().sorted().collect(Collectors.toList());
 
     if (args.terms != null) {
-      List<Integer> includeTerms = Arrays.stream(args.terms.split(","))
-          .map(Integer::parseInt)
-          .collect(Collectors.toList());
+      List<Integer> includeTerms =
+          Arrays.stream(args.terms.split(",")).map(Integer::parseInt).collect(Collectors.toList());
       termCodes.removeIf(i -> !includeTerms.contains(i));
     }
 
     if (args.excludeTerms != null) {
       List<Integer> excludeTerms = Arrays.stream(args.excludeTerms.split(","))
-          .map(Integer::parseInt)
-          .collect(Collectors.toList());
+          .map(Integer::parseInt).collect(Collectors.toList());
       termCodes.removeIf(excludeTerms::contains);
     }
 
@@ -119,10 +115,11 @@ public class CommandLineApp {
       String gradePath = gradeReportPaths.get(termCode);
 
       if (dirPath == null || gradePath == null) {
-        if (termCode % 10 == 6) { //summer terms end with 6
+        if (termCode % 10 == 6) { // summer terms end with 6
           System.out.println("Summer Terms (" + termCode + ") do not have grade reports");
         } else {
-          System.out.println("Skipping: " + termCode + ", dirPath=" + dirPath + ", gradePath=" + gradePath);
+          System.out.println(
+              "Skipping: " + termCode + ", dirPath=" + dirPath + ", gradePath=" + gradePath);
         }
         continue;
       }
@@ -138,29 +135,14 @@ public class CommandLineApp {
   }
 
   private static void readAefisCourses(TermReports reports, InputStream stream) throws IOException {
-    InputStreamReader reader = new InputStreamReader(stream);
-    List<String> lines = CharStreams.readLines(reader);
-
-    int courseNumberIndex = -1;
-    int subjectAbbrevIndex = -1;
-    int courseNameIndex = -1;
-
-    for (String line : lines) {
-      List<String> fields = Arrays.asList(line.split(",(?=([^\"]|\"[^\"]*\")*$)"));
-
-      if (courseNumberIndex < 0) {
-        courseNumberIndex = fields.indexOf("Course Number");
-        subjectAbbrevIndex = fields.indexOf("Subject Code");
-        courseNameIndex = fields.indexOf("Name");
-        continue;
-      }
-
-      String subjectAbbrev = fields.get(subjectAbbrevIndex).replaceAll("\"", "");
-      int courseNumber = Integer.parseInt(fields.get(courseNumberIndex));
-      String name = fields.get(courseNameIndex).replaceAll("\"", "");
-
+    InputStreamReader streamReader = new InputStreamReader(stream);
+    CSVReader csvReader = new CSVReaderHeaderAwareBuilder(streamReader).build();
+    csvReader.forEach((String[] row) -> {
+      String subjectAbbrev = row[0].replaceAll("\"", "");
+      int courseNumber = Integer.parseInt(row[1]);
+      String name = row[2].replaceAll("\"", "");
       reports.setFullCourseName(subjectAbbrev, courseNumber, name);
-    }
+    });
   }
 
   private static void extract(TermReports reports, int termCode, String dirPath, String gradePath)
@@ -190,8 +172,7 @@ public class CommandLineApp {
 
     // grade report
     InputStream grades = new FileInputStream(gradePath);
-    try (Stream<PdfRow> gradeRows = Pdfs
-        .extractRows(grades, gradeColumns, "TERM", false)) {
+    try (Stream<PdfRow> gradeRows = Pdfs.extractRows(grades, gradeColumns, "TERM", false)) {
       term.addGrades(gradeRows.flatMap(Parse::gradeEntry));
     }
   }

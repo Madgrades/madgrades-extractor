@@ -1,3 +1,4 @@
+.vscode/
 *.sql
 *.csv
 .idea
