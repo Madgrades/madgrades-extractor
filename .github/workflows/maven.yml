@@ -19,5 +19,5 @@ jobs:
       run: mvn package
     - uses: actions/upload-artifact@v3
       with:
-        name: Package
-        path: target/*.jar
+        name: jar
+        path: target/madgrades-final*.jar
