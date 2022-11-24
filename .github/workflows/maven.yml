@@ -2,10 +2,12 @@ name: Java CI with Maven
 on:
   push:
     branches: "master"
-  pull_request:
+  pull_request_review:
     branches: "master"
+    types: [submitted]
 jobs:
   build:
+    if: github.event.push || github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
