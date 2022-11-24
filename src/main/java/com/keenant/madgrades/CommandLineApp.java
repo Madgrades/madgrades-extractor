@@ -171,10 +171,15 @@ public class CommandLineApp {
     Term term = reports.getOrCreateTerm(termCode);
 
     List<Float> dirColumns = Constants.DIR_COLUMNS;
+    List<Float> gradeColumns = Constants.GRADES_COLUMNS;
     if (termCode == 1124) {
       dirColumns = Constants.DIR_COLUMNS_1124;
     } else if (termCode >= 1204) {
       dirColumns = Constants.DIR_COLUMNS_SINCE_1204;
+    }
+
+    if (termCode == 1224) {
+      gradeColumns = Constants.GRADES_COLUMNS_1224;
     }
 
     // dir report
@@ -186,7 +191,7 @@ public class CommandLineApp {
     // grade report
     InputStream grades = new FileInputStream(gradePath);
     try (Stream<PdfRow> gradeRows = Pdfs
-        .extractRows(grades, Constants.GRADES_COLUMNS, "TERM", false)) {
+        .extractRows(grades, gradeColumns, "TERM", false)) {
       term.addGrades(gradeRows.flatMap(Parse::gradeEntry));
     }
   }
