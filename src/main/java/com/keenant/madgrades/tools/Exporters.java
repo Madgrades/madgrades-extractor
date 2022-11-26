@@ -1,7 +1,10 @@
 package com.keenant.madgrades.tools;
 
+import com.google.common.io.CharStreams;
+import com.keenant.madgrades.CommandLineApp;
 import com.keenant.madgrades.utils.Exporter;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.List;
@@ -18,9 +21,7 @@ public class Exporters {
       PrintWriter writer = new PrintWriter(outFile);
 
       Collection<Map<String, Object>> entries = tables.get(table);
-      List<String> fields = entries.stream()
-          .flatMap(list -> list.keySet().stream())
-          .distinct()
+      List<String> fields = entries.stream().flatMap(list -> list.keySet().stream()).distinct()
           .collect(Collectors.toList());
 
       if (writeHeaders) {
@@ -33,8 +34,7 @@ public class Exporters {
 
           if (value instanceof String) {
             writer.print('"' + value.toString().replace("\"", "\"\"") + '"');
-          }
-          else {
+          } else {
             writer.print(value);
           }
 
@@ -52,20 +52,28 @@ public class Exporters {
   /**
    * Exports to MySQL insert statements .sql files per table.
    */
-  public static final Exporter<Boolean> MYSQL = (dir, tables, writeTruncateStmt) -> {
+  public static final Exporter<Boolean> MYSQL = (dir, tables, writeSchema) -> {
+    if (writeSchema) {
+      File outFile = new File(dir, "_schema.sql");
+      PrintWriter writer = new PrintWriter(outFile);
+      for (String table : tables.keySet()) {
+        writer.println("TRUNCATE " + table + ";");
+      }
+      InputStreamReader createTablesReader = new InputStreamReader(
+          CommandLineApp.class.getResourceAsStream("/mysql_create_tables.sql"));
+      CharStreams.readLines(createTablesReader).forEach(line -> {
+        writer.println(line);
+      });
+      writer.close();
+    }
+
     for (String table : tables.keySet()) {
       File outFile = new File(dir, table + ".sql");
       PrintWriter writer = new PrintWriter(outFile);
 
       Collection<Map<String, Object>> entries = tables.get(table);
-      List<String> fields = entries.stream()
-          .flatMap(list -> list.keySet().stream())
-          .distinct()
+      List<String> fields = entries.stream().flatMap(list -> list.keySet().stream()).distinct()
           .collect(Collectors.toList());
-
-      if (writeTruncateStmt) {
-        writer.println("TRUNCATE " + table + ";");
-      }
 
       writer.print("INSERT INTO " + table + " ");
       writer.print("(");
@@ -81,8 +89,7 @@ public class Exporters {
 
           if (value instanceof String) {
             writer.print("'" + value.toString().replace("'", "''") + "'");
-          }
-          else {
+          } else {
             writer.print(value);
           }
 

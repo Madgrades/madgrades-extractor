@@ -5,21 +5,16 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.google.common.io.CharStreams;
 import com.keenant.madgrades.data.Subject;
 import com.keenant.madgrades.data.Term;
 import com.keenant.madgrades.data.TermReports;
-import com.keenant.madgrades.tools.Exporters;
 import com.keenant.madgrades.tools.Parse;
 import com.keenant.madgrades.tools.Pdfs;
 import com.keenant.madgrades.utils.PdfRow;
 import com.keenant.madgrades.utils.Scrapers;
 import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
 import com.opencsv.CSVReaderHeaderAwareBuilder;
 import java.io.*;
-import java.net.URL;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -130,7 +125,7 @@ public class CommandLineApp {
     Multimap<String, Map<String, Object>> tables = reports.generateTables(subjects);
 
     System.out.println("Exporting to '" + outDirectory.getAbsolutePath() + "'");
-    args.format.getExporter().export(outDirectory, tables, true);
+    args.format.getExporter().export(outDirectory, tables, false);
     System.out.println("Done.");
   }
 
