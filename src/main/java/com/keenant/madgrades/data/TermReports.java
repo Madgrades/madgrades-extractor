@@ -65,8 +65,8 @@ public class TermReports {
         tables.put("course_offerings", Mappers.COURSE_OFFERING.map(offering, course));
 
         for (Subject subject : offering.getSubjects()) {
-          subjects.put(subject.getCode(), subject);
-          tables.put("subject_memberships", Mappers.SUBJECT_MEMBERSHIP.map(subject.getCode(), offering));
+          subjects.put(subject.getName(), subject);
+          tables.put("subject_memberships", Mappers.SUBJECT_MEMBERSHIP.map(subject.getName(), offering));
         }
 
         for (Entry<Integer, Map<GradeType, Integer>> grades : offering.getGrades().entrySet()) {
@@ -107,7 +107,7 @@ public class TermReports {
     }
 
     for (Subject subject : scrapedSubjects) {
-      subjects.put(subject.getCode(), subject);
+      subjects.put(subject.getName(), subject);
     }
 
     for (Subject subject : subjects.values()) {

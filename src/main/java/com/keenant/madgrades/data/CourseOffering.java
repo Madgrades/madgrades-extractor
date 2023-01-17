@@ -30,7 +30,7 @@ public class CourseOffering {
     this.termCode = termCode;
     this.courseNumber = courseNumber;
     this.subjects = new HashMap<String, Subject>() {{
-      put(subject.getCode(), subject);
+      put(subject.getName(), subject);
     }};
     this.sections = sections;
     this.name = new AtomicReference<>(name);
@@ -110,7 +110,7 @@ public class CourseOffering {
   }
 
   public void addSubject(Subject subject) {
-    subjects.put(subject.getCode(), subject);
+    subjects.put(subject.getName(), subject);
   }
 
   private void addGrades(int sectionNumber, Map<GradeType, Integer> distribution) {

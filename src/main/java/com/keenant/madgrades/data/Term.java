@@ -53,7 +53,7 @@ public class Term {
     for (String subjectCode : subjectCodes) {
       String name = subjectNames.get(subjectCode);
       String abbrev = subjectAbbrevs.get(subjectCode);
-      subjects.put(subjectCode, new Subject(name, abbrev, subjectCode));
+      subjects.put(subjectCode, new Subject(subjectCode, abbrev, name));
     }
 
     Set<Integer> courseNumbers = courseNumbers().collect(Collectors.toSet());

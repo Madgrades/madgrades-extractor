@@ -24,11 +24,11 @@ public class Scrapers {
         for (Element tr : tbody.select("tr")) {
             Elements children = tr.children();
 
-            String name = children.get(0).text();
+            String code = children.get(0).text();
             String abbreviation = children.get(1).text();
-            String code = children.get(2).text();
+            String name = children.get(2).text();
 
-            subjects.add(new Subject(name, abbreviation, code));
+            subjects.add(new Subject(code, abbreviation, name));
         }
 
         return subjects;
