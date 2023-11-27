@@ -19,7 +19,7 @@ public class Scrapers {
         Set<Subject> subjects = new HashSet<>();
         Document doc = Jsoup.connect(Constants.SUBJECTS_URL).get();
 
-        Element tbody = doc.selectFirst("table").selectFirst("tbody");
+        Element tbody = doc.selectFirst("table#table_1").selectFirst("tbody");
 
         for (Element tr : tbody.select("tr")) {
             Elements children = tr.children();
