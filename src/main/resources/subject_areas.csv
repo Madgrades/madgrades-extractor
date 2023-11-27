@@ -1,0 +1,186 @@
+Code,Abbreviation,Subject Area
+102,A F AERO,Air Force Aerospace Studies
+104,AFRICAN,African Cultural Studies
+106,AFROAMER,Afro-American Studies
+108,A A E,Agricultural and Applied Economics
+112,BSE,Biological Systems Engineering
+120,LSC,Life Sciences Communication
+130,AGROECOL,Agroecology
+132,AGRONOMY,Agronomy
+140,AMER IND,American Indian Studies
+144,ANATOMY,Anatomy
+146,ANAT&PHY,Anatomy & Physiology
+148,ANESTHES,Anesthesiology
+156,ANTHRO,Anthropology
+160,ABT,Applied Biotechnology
+168,ART,Art Department
+176,ART ED,Art Education (Department of Art)
+180,ART HIST,Art History
+184,ASIAN AM,Asian American Studies
+185,ASIAN,Asian Languages and Cultures
+186,ASIALANG,Asian Languages and Cultures: Languages
+188,ASTRON,Astronomy
+192,MICROBIO,Microbiology
+194,RP & SE,Rehabilitation Psychology and Special Education
+200,BIOCHEM,Biochemistry
+205,BIOLOGY,Biology
+206,BIOCORE,Biology Core Curriculum
+207,B M E,Biomedical Engineering
+208,BOTANY,Botany
+210,B M I,Biostatistics and Medical Informatics
+217,CRB,Cell and Regenerative Biology
+220,CBE,Chemical and Biological Engineering
+224,CHEM,Chemistry
+228,CHICLA,Chicana/o and Latina/o Studies
+229,DERM,Dermatology
+230,HDFS,Human Development and Family Studies
+231,GEN BUS,General Business
+232,ACCT I S,Accounting and Information Systems
+233,FINANCE,"Finance, Investment and Banking"
+234,INFO SYS,Information Systems
+235,INTL BUS,International Business
+236,M H R,Management and Human Resources
+237,MARKETNG,Marketing
+238,OTM,Operations and Technology Management
+239,REAL EST,Real Estate and Urban Land Economics
+240,CIV ENGR,Civil and Environmental Engineering
+241,R M I,Risk Management and Insurance
+242,ACT SCI,Actuarial Science
+244,CLASSICS,Classics
+247,CSCS,Civil Society and Community Studies
+250,COM ARTS,Communication Arts
+252,CS&D,Communication Sciences and Disorders
+260,COMP LIT,Comparative Literature
+266,COMP SCI,Computer Sciences
+270,COUN PSY,Counseling Psychology
+271,CNSR SCI,Consumer Science
+272,CURRIC,Curriculum and Instruction
+292,DY SCI,Dairy Science
+296,ECON,Economics
+305,ELPA,Educational Leadership and Policy Analysis
+310,ED POL,Educational Policy Studies
+315,ED PSYCH,Educational Psychology
+320,E C E,Electrical and Computer Engineering
+330,EMER MED,Emergency Medicine
+346,E M A,Engineering Mechanics and Aerospace Engineering
+347,E P,Engineering Physics
+348,E P D,Engineering Professional Development
+351,ESL,English as a Second Language
+352,ENGL,English
+355,ENTOM,Entomology
+359,DS,Design Studies
+360,ENVIR ST,Environmental Studies - Gaylord Nelson Institute
+362,M&ENVTOX,Molecular and Environmental Toxicology
+370,FAM MED,Family Medicine
+375,FISC,Farm & Industry Short Course
+380,FOLKLORE,Folklore Program
+390,FOOD SCI,Food Science
+396,F&W ECOL,Forest and Wildlife Ecology
+400,FRENCH,French (French and Italian)
+412,GENETICS,Genetics
+416,GEOG,Geography
+418,G L E,Geological Engineering
+420,GEOSCI,Geoscience
+424,GERMAN,German
+425,GNS,"German, Nordic, and Slavic"
+428,GREEK,Greek (Classics)
+436,OBS&GYN,Obstetrics and Gynecology
+441,HEBR-BIB,Hebrew-Biblical
+442,HEBR-MOD,Hebrew-Modern
+448,HISTORY,History
+452,MED HIST,Medical History and Bioethics
+456,HIST SCI,History of Science
+476,HORT,Horticulture
+480,H ONCOL,Human Oncology
+490,I SY E,Industrial and Systems Engineering
+494,INTER-AG,Interdisciplinary Courses (CALS)
+495,INTEGART,Integrated Arts
+496,INTEREGR,Interdisciplinary Courses (Engineering)
+498,INTER-HE,Interdisciplinary Courses (SOHE)
+500,ILS,Integrated Liberal Studies
+502,INTER-LS,Interdisciplinary Courses (L&S)
+503,INTEGSCI,Integrated Science
+504,INTL ST,International Studies
+508,ITALIAN,Italian (French and Italian)
+510,JEWISH,Jewish Studies
+512,JOURN,Journalism and Mass Communication
+520,LAND ARC,Landscape Architecture
+524,LATIN,Latin (Classics)
+525,LACIS,"Latin American, Caribbean, and Iberian Studies"
+528,LAW,Law
+535,LEGAL ST,Legal Studies
+544,L I S,Library and Information Studies
+550,LINGUIS,Linguistics
+551,LITTRANS,Literature in Translation
+600,MATH,Mathematics
+604,AN SCI,Animal Sciences
+612,M E,Mechanical Engineering
+616,MD GENET,Medical Genetics
+620,M M & I,Medical Microbiology and Immunology
+621,MED PHYS,Medical Physics
+622,MED SC-M,Medical Sciences - Medical School
+623,MED SC-V,Medical Sciences - Veterinary Medicine
+632,MEDICINE,Medicine
+633,MEDIEVAL,Medieval Studies
+636,M S & E,Materials Science and Engineering
+640,ATM OCN,Atmospheric and Oceanic Sciences
+644,MIL SCI,Military Science
+650,MOL BIOL,Molecular Biology
+660,MUSIC,Music
+664,MUS PERF,Music-Performance
+672,NAV SCI,Naval Science
+676,NEUROL,Neurology
+678,NEURSURG,Neurological Surgery
+681,NEURODPT,Neuroscience
+682,NTP,Neuroscience Training Program
+684,N E,Nuclear Engineering
+691,CNP,Collaborative Nursing Program
+692,NURSING,Nursing
+694,NUTR SCI,Nutritional Sciences
+695,OCC THER,Occupational Therapy (Department of Kinesiology)
+700,ONCOLOGY,Oncology
+702,OPHTHALM,Ophthalmology and Visual Sciences
+703,PATH-BIO,Patho-Biological Sciences
+704,PATH,Pathology and Laboratory Medicine
+708,PEDIAT,Pediatrics
+718,PHM SCI,Pharmaceutical Sciences
+724,PHMCOL-M,Pharmacology
+726,PHARMACY,Pharmacy
+728,PHM PRAC,Pharmacy Practice
+732,S&A PHM,Social and Administrative Pharmacy
+736,PHILOS,Philosophy
+741,DANCE,Dance
+742,KINES,Kinesiology
+745,PHY THER,Physical Therapy
+750,PHY ASST,Physician Assistant Program
+754,PHYSICS,Physics
+758,BMOLCHEM,Biomolecular Chemistry
+762,PHYSIOL,Physiology
+766,PL PATH,Plant Pathology
+778,POLI SCI,Political Science
+782,PORTUG,Portuguese (Spanish and Portuguese)
+810,POP HLTH,Population Health Sciences
+814,PSYCHIAT,Psychiatry
+820,PSYCH,Psychology
+826,PUB AFFR,La Follette School of Public Affairs
+828,PUBLHLTH,Public Health
+832,RADIOL,Radiology
+840,RHAB MED,Rehabilitation Medicine
+856,RELIG ST,Religious Studies
+864,C&E SOC,Community and Environmental Sociology
+872,SCAND ST,Scandinavian Studies
+875,STS,Science and Technology Studies
+882,SR MED,Senior Medical Program
+888,SLAVIC,Slavic (Slavic Languages)
+896,SOC WORK,Social Work
+900,SOC,Sociology
+908,SOIL SCI,Soil Science
+912,SPANISH,Spanish (Spanish and Portuguese)
+932,STAT,Statistics
+934,COMP BIO,Comparative Biosciences
+936,SURGERY,Surgery
+938,SURG SCI,Surgical Sciences
+942,THEATRE,Theatre and Drama
+944,URB R PL,Urban and Regional Planning
+963,GEN&WS,Gender and Women’s Studies
+970,ZOOLOGY,Zoology
