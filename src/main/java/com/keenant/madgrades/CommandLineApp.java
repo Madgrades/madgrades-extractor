@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -69,8 +70,7 @@ public class CommandLineApp {
       }
     }
 
-    System.out.println("Scraping for subjects...");
-    Set<Subject> subjects = Scrapers.scrapeSubjects();
+    System.out.println("Scraping for things...");
     Map<Integer, String> dirReportPaths = Scrapers.scrapeDirReports(args.registrarReports);
     Map<Integer, String> gradeReportPaths = Scrapers.scrapeGradeReports(args.registrarReports);
 
@@ -103,7 +103,11 @@ public class CommandLineApp {
 
     TermReports reports = new TermReports();
 
+    System.out.println("Reading course names...");
     readAefisCourses(reports, CommandLineApp.class.getResourceAsStream("/aefis_courses.csv"));
+
+    System.out.println("Reading subject areas...");
+    Set<Subject> subjects = readSubjectAreas(CommandLineApp.class.getResourceAsStream("/subject_areas.csv"));
 
     for (int termCode : termCodes) {
       String dirPath = dirReportPaths.get(termCode);
@@ -138,6 +142,19 @@ public class CommandLineApp {
       String name = row[2].replaceAll("\"", "");
       reports.setFullCourseName(subjectAbbrev, courseNumber, name);
     });
+  }
+
+  private static Set<Subject> readSubjectAreas(InputStream stream) throws IOException {
+    InputStreamReader streamReader = new InputStreamReader(stream);
+    CSVReader csvReader = new CSVReaderHeaderAwareBuilder(streamReader).build();
+    Set<Subject> subjects = new HashSet<>();
+    csvReader.forEach((String[] row) -> {
+      String code = row[0];
+      String abbreviation = row[1];
+      String name = row[2];
+      subjects.add(new Subject(name, abbreviation, code));
+    });
+    return subjects;
   }
 
   private static void extract(TermReports reports, int termCode, String dirPath, String gradePath)

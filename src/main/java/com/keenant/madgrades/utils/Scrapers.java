@@ -15,25 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class Scrapers {
-    public static Set<Subject> scrapeSubjects() throws IOException {
-        Set<Subject> subjects = new HashSet<>();
-        Document doc = Jsoup.connect(Constants.SUBJECTS_URL).get();
-
-        Element tbody = doc.selectFirst("table#table_1").selectFirst("tbody");
-
-        for (Element tr : tbody.select("tr")) {
-            Elements children = tr.children();
-
-            String name = children.get(0).text();
-            String abbreviation = children.get(1).text();
-            String code = children.get(2).text();
-
-            subjects.add(new Subject(name, abbreviation, code));
-        }
-
-        return subjects;
-    }
-
     public static Map<Integer, String> scrapeDirReports(String registrarReports) {
         File dirReportPath = new File(registrarReports, "dir");
         if (!dirReportPath.isDirectory()) {
