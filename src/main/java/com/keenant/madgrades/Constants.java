@@ -53,5 +53,5 @@ public class Constants {
   public static final String SCHEDULES_URL = "https://registrar.wisc.edu/schedule-of-classes-faculty/";
 
   /** page which contains a table of subject areas */
-  public static final String SUBJECTS_URL = "https://registrar.wisc.edu/subjectarea/";
+  public static final String SUBJECTS_URL = "https://web.archive.org/web/20230527143153/https://registrar.wisc.edu/subjectareas/";
 }
