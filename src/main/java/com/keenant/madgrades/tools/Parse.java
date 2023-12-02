@@ -85,7 +85,9 @@ public class Parse {
       // some names contain role first
       if (instructorName.contains("/")) {
         String[] roleAndName = instructorName.split("/");
-        instructorName = roleAndName[1];
+        if (roleAndName.length == 2) {
+          instructorName = roleAndName[1];
+        }
       }
 
       // some names are "LAST, FIRST", we reorder them to "FIRST LAST"
