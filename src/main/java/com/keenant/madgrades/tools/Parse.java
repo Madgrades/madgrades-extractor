@@ -81,7 +81,12 @@ public class Parse {
 
     if (cols.get(11).length() > 0) {
       instructorName = cols.get(11);
-      instructorName = instructorName.replace("P / ", "");
+
+      // some names contain role first
+      if (instructorName.contains("/")) {
+        String[] roleAndName = instructorName.split("/");
+        instructorName = roleAndName[1];
+      }
 
       // some names are "LAST, FIRST", we reorder them to "FIRST LAST"
       if (instructorName.contains(",")) {
@@ -90,6 +95,7 @@ public class Parse {
           instructorName = names[1] + " " + names[0];
         }
       }
+      instructorName = instructorName.trim();
     }
 
     Schedule schedule = new Schedule(times, days);
