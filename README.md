@@ -3,7 +3,7 @@
 This project reads UW Madison grade distribution and course report PDF files (published by the UW Madison Office
 of the Registrar) and converts them into CSV or SQL dump files.
 
-You will find published, update-to-date datasets at [Kaggle](https://www.kaggle.com/Madgrades/uw-madison-courses).
+You will find published, update-to-date datasets at [Kaggle](https://www.kaggle.com/Madgrades/uw-madison-courses). You can also find up to date datasets at [UW-Madison's Office of the Registrar](https://registrar.wisc.edu/grade-reports/).
 
 ![https://i.imgur.com/9ZrwRMt.png](https://i.imgur.com/9ZrwRMt.png)
 
