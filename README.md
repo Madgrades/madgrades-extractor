@@ -1,10 +1,10 @@
-# uw-madison-pdf-extractor
+# madgrades-extractor
 
 Extract structured tabular data from UW–Madison academic PDF reports.
 
 This repository owns the extraction and transformation step between source PDFs and downstream datasets. It handles PDF-specific structure, carries contextual information across pages and sections, applies narrowly scoped cleanup rules, and produces flat records suitable for analysis or further processing.
 
-Raw PDFs are maintained separately in [`uw-madison-pdf-archive`](https://github.com/Madgrades/uw-madison-pdf-archive). Converting extracted records into Madgrades' relational data model is also outside the scope of this repository.
+Raw PDFs are maintained separately in [`madgrades-pdf-archive`](https://github.com/Madgrades/madgrades-pdf-archive). Converting extracted records into Madgrades' relational data model is also outside the scope of this repository.
 
 ## Responsibilities
 
