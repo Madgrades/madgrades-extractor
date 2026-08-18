@@ -1,4 +1,4 @@
-package com.cadenkruckeberg.mce.tabularization.pdfformats;
+package com.madgrades.extractor.tabularization.pdfformats;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,13 +6,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.cadenkruckeberg.mce.extraction.ExtractedPdf;
-import com.cadenkruckeberg.mce.extraction.ExtractedPdfPage;
-import com.cadenkruckeberg.mce.output.AbnormalRowLogger;
-import com.cadenkruckeberg.mce.tabularization.PdfFormat;
-import com.cadenkruckeberg.mce.tabularization.Regexes;
-import com.cadenkruckeberg.mce.tabularization.TableUtils;
-import com.cadenkruckeberg.mce.tabularization.TabularOutcome;
+import com.madgrades.extractor.extraction.ExtractedPdf;
+import com.madgrades.extractor.extraction.ExtractedPdfPage;
+import com.madgrades.extractor.output.AbnormalRowLogger;
+import com.madgrades.extractor.tabularization.PdfFormat;
+import com.madgrades.extractor.tabularization.Regexes;
+import com.madgrades.extractor.tabularization.TableUtils;
+import com.madgrades.extractor.tabularization.TabularOutcome;
 
 /**
  * Tabularizes Department Instructional Report (DIR) PDFs that use the third

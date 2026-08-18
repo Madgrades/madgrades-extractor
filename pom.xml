@@ -1,9 +1,9 @@
 <project xmlns="http://apache.org" xmlns:xsi="http://w3.org" xsi:schemaLocation="http://apache.org http://apache.org">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.cadenkruckeberg</groupId>
-    <artifactId>mce</artifactId>
+    <groupId>com.madgrades</groupId>
+    <artifactId>extractor</artifactId>
     <version>1.0.0</version>
-    <name>Madison-Courses-Extractor</name>
+    <name>madgrades-extractor</name>
     <description>
       Extracts UW-Madison Department Instructional Reports and Grade Reports into CSV files.
     </description>
@@ -35,7 +35,7 @@
         </dependency>
       </dependencies>
     <build>
-        <finalName>Madison-Courses-Extractor</finalName>
+        <finalName>madgrades-extractor</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -46,7 +46,7 @@
                     <archive>
                         <manifest>
                             <mainClass>
-                                com.cadenkruckeberg.mce.MadisonCoursesExtractor
+                                com.madgrades.extractor.MadgradesExtractor
                             </mainClass>
                         </manifest>
                     </archive>

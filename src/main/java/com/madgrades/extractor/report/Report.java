@@ -1,4 +1,4 @@
-package com.cadenkruckeberg.mce.report;
+package com.madgrades.extractor.report;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,11 +11,11 @@ import java.util.regex.Pattern;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
-import com.cadenkruckeberg.mce.tabularization.PdfFormat;
-import com.cadenkruckeberg.mce.tabularization.pdfformats.DirFormat1;
-import com.cadenkruckeberg.mce.tabularization.pdfformats.DirFormat2;
-import com.cadenkruckeberg.mce.tabularization.pdfformats.DirFormat3;
-import com.cadenkruckeberg.mce.tabularization.pdfformats.PdgrFormat1;
+import com.madgrades.extractor.tabularization.PdfFormat;
+import com.madgrades.extractor.tabularization.pdfformats.DirFormat1;
+import com.madgrades.extractor.tabularization.pdfformats.DirFormat2;
+import com.madgrades.extractor.tabularization.pdfformats.DirFormat3;
+import com.madgrades.extractor.tabularization.pdfformats.PdgrFormat1;
 
 /**
  * Represents a recognized report PDF and its associated metadata.

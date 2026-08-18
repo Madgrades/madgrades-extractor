@@ -1,4 +1,4 @@
-package com.cadenkruckeberg.mce.report;
+package com.madgrades.extractor.report;
 
 /**
  * Identifies the type of report represented by a PDF.

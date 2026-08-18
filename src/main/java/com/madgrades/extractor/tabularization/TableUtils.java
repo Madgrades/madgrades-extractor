@@ -1,4 +1,4 @@
-package com.cadenkruckeberg.mce.tabularization;
+package com.madgrades.extractor.tabularization;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.cadenkruckeberg.mce.output;
+package com.madgrades.extractor.output;
 
 /**
  * Controls whether abnormal-row warnings are written to standard error.

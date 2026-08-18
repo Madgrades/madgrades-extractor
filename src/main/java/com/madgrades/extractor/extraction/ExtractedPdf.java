@@ -1,4 +1,4 @@
-package com.cadenkruckeberg.mce.extraction;
+package com.madgrades.extractor.extraction;
 
 import java.util.List;
 

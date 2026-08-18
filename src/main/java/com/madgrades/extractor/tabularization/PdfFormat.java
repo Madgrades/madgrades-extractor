@@ -1,8 +1,8 @@
-package com.cadenkruckeberg.mce.tabularization;
+package com.madgrades.extractor.tabularization;
 
 import java.util.List;
 
-import com.cadenkruckeberg.mce.extraction.ExtractedPdf;
+import com.madgrades.extractor.extraction.ExtractedPdf;
 
 /**
  * Defines the extraction columns boundaries and tabularization behavior for a

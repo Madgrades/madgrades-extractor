@@ -1,4 +1,4 @@
-package com.cadenkruckeberg.mce.output;
+package com.madgrades.extractor.output;
 
 import java.io.File;
 import java.io.FileWriter;
