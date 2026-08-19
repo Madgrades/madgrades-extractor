@@ -65,3 +65,5 @@ Extracts tabular data from UW-Madison report PDFs.
 ## Documentation
 
 To learn more about the design philosophy for this extractor, known limitations, and implementation details, read [docs.md](./docs.md)
+
+*This project is unaffiliated with UW–Madison* 
